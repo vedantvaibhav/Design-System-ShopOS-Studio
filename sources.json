@@ -7,13 +7,52 @@
       "design-system.html": "design-system.html",
       "assets/jammie/v3": "assets/jammie/v3"
     },
-    "exclude": ["assets/jammie/v3/demo/*", "assets/jammie/v3/look-*"],
-    "replace": [
-      { "file": "design-system.html", "find": "  <a class=\"go\" href=\"app.html\">Prototype</a>\n", "with": "" },
-      { "file": "design-system.html", "find": "  <a class=\"go\" href=\"flows.html\">Flow map</a>\n", "with": "" },
-      { "file": "design-system.html", "find": " + '<h6>Also</h6><a href=\"app.html\">Prototype</a><a href=\"flows.html\">Flow map</a>'", "with": "" },
-      { "file": "design-system.html", "find": "skill/jammie-design/SKILL.md", "with": "SKILL.md" }
+    "exclude": [
+      "assets/jammie/v3/demo/*",
+      "assets/jammie/v3/look-*"
     ],
-    "keep": ["README.md"]
+    "replace": [
+      {
+        "file": "design-system.html",
+        "find": "  <a class=\"go\" href=\"app.html\">Prototype</a>\n",
+        "with": ""
+      },
+      {
+        "file": "design-system.html",
+        "find": "  <a class=\"go\" href=\"flows.html\">Flow map</a>\n",
+        "with": ""
+      },
+      {
+        "file": "design-system.html",
+        "find": " + '<h6>Also</h6><a href=\"app.html\">Prototype</a><a href=\"flows.html\">Flow map</a>'",
+        "with": ""
+      },
+      {
+        "file": "design-system.html",
+        "find": "skill/jammie-design/SKILL.md",
+        "with": "SKILL.md"
+      }
+    ],
+    "keep": [
+      "README.md"
+    ]
+  },
+  "sloosh": {
+    "repo": "Shop-OS/sloosh-design-system",
+    "ref": "main",
+    "skill": "docs/design-system/README.md",
+    "description": "Sloosh's design system: dark by default, one yellow (#FECC15) for the main action and display titles, keycap buttons, Bricolage Grotesque titles, pictures carry the colour. Use when building or reviewing any Sloosh screen or component, in dark and light.",
+    "copy": {
+      "docs/design-system": ".",
+      "styles/tokens/primitives.css": "styles/tokens/primitives.css",
+      "styles/tokens/semantic.css": "styles/tokens/semantic.css",
+      "styles/theme.css": "styles/theme.css"
+    },
+    "exclude": [
+      "docs/design-system/README.md"
+    ],
+    "keep": [
+      "README.md"
+    ]
   }
 }

@@ -1,0 +1,256 @@
+/* ==========================================================================
+   PRIMITIVES: the raw colour ramps (design system v4, DS4).
+   From DS4 src/vendor/tokens.css (Figma "Primitives"), which supersedes the
+   earlier port of production's packages/ui/src/primitive-tokens.css. Every
+   ramp is complete now (50 to 950), with a 150 step on each (DS2).
+
+   Every value is an HSL triple ("H S% L%"), not a full colour, so a token
+   can take an alpha where it is used: hsl(var(--neutral-950) / 0.8).
+   The hex at the end of each line is the same colour, for reading only.
+   Nothing in components reads these directly; semantic.css maps them onto
+   roles (background, card, border, brand-accent...). Tailwind also exposes
+   them as bg-neutral-800, text-red-400 and so on (theme.css), for the rare
+   place a raw ramp step is needed.
+
+   NOTE (DS4): the Sloosh yellow is --creative-gen-accent-*. --yellow-* is
+   now Tailwind's yellow ramp (status yellow). They are different colours.
+
+   To retune a colour everywhere it is used, edit it here.
+   ========================================================================== */
+:root {
+  /* Neutral: the greys of every ground, surface, line and text. DS2 uses no
+     pure white or black: its ends are 50 (#FAFAFA) and 950 (#0A0A0A). */
+  --neutral-0: 0 0% 100%; /* #FFFFFF (DS4; DS2 has no pure white) */
+  --neutral-50: 0 0% 98%; /* #FAFAFA */
+  --neutral-100: 0 0% 96%; /* #F5F5F5 */
+  --neutral-150: 0 0% 91.8%; /* #EAEAEA */
+  --neutral-200: 0 0% 89.8%; /* #E5E5E5 */
+  --neutral-300: 0 0% 83%; /* #D4D4D4 */
+  --neutral-400: 0 0% 64%; /* #A3A3A3 */
+  --neutral-500: 0 0% 45%; /* #737373 */
+  --neutral-600: 0 0% 32%; /* #525252 */
+  --neutral-700: 0 0% 25%; /* #404040 */
+  --neutral-800: 0 0% 15%; /* #262626 */
+  --neutral-900: 0 0% 9%; /* #171717 */
+  --neutral-950: 0 0% 4%; /* #0A0A0A */
+
+  /* creative-gen-accent: THE SLOOSH YELLOW (Figma "creative-gen-accent"). Every brand-* token
+     sits on this ramp. Before DS4 the app called four of these steps --yellow-*. */
+  --creative-gen-accent-50: 52.2 100% 95.5%; /* #FFFCE8 */
+  --creative-gen-accent-100: 50.3 97.1% 86.3%; /* #FEF3BA */
+  --creative-gen-accent-150: 49.9 97.9% 81%; /* #FEEE9F */
+  --creative-gen-accent-200: 49.8 98.4% 75.3%; /* #FEE982 */
+  --creative-gen-accent-300: 49.7 98.9% 65.5%; /* #FEE050 */
+  --creative-gen-accent-400: 47.9 99.1% 58.6%; /* #FED42D */
+  --creative-gen-accent-500: 47.1 99.1% 53.9%; /* #FECC15 */
+  --creative-gen-accent-600: 46.4 91.2% 44.5%; /* #D9AA0A */
+  --creative-gen-accent-700: 45.9 94.4% 35.3%; /* #AF8705 */
+  --creative-gen-accent-800: 45 97% 25.9%; /* #826202 */
+  --creative-gen-accent-900: 44.4 84.7% 23.1%; /* #6D5309 */
+  --creative-gen-accent-950: 43.8 91.3% 13.5%; /* #423103 */
+
+  /* Yellow: Tailwind's yellow ramp (DS4). Status yellow only, NOT the brand accent. */
+  --yellow-50: 55 92% 95%; /* #FEFCE7 */
+  --yellow-100: 52.8 96.7% 88.2%; /* #FEF7C4 */
+  --yellow-150: 51.6 97.7% 82.7%; /* #FEF2A8 */
+  --yellow-200: 50.7 98.3% 76.9%; /* #FEEC8A */
+  --yellow-300: 48.4 97.9% 62.7%; /* #FDD943 */
+  --yellow-400: 44.5 95.7% 54.1%; /* #FAC01A */
+  --yellow-500: 48.7 100% 49.8%; /* #FECE00 */
+  --yellow-600: 40.6 96.1% 40.4%; /* #CA8A04 */
+  --yellow-700: 35.2 91.7% 33.1%; /* #A26207 */
+  --yellow-800: 32.3 81% 28.8%; /* #854E0E */
+  --yellow-900: 28.4 72.5% 25.7%; /* #713F12 */
+  --yellow-950: 27 83.3% 14.1%; /* #422106 */
+
+  /* Red */
+  --red-50: 0 85.7% 97.3%; /* #FEF2F2 */
+  --red-100: 0 100% 94.3%; /* #FFE2E2 */
+  --red-150: 0 100% 92%; /* #FFD6D6 */
+  --red-200: 0 96.3% 89.4%; /* #FECACA */
+  --red-300: 0 93.5% 81.8%; /* #FCA5A5 */
+  --red-400: 0 90.6% 70.8%; /* #F87171 */
+  --red-500: 0 84.2% 60.2%; /* #EF4444 */
+  --red-600: 0 72.2% 50.6%; /* #DC2626 */
+  --red-700: 0 73.7% 41.8%; /* #B91C1C */
+  --red-800: 0 70% 35.3%; /* #991B1B */
+  --red-900: 0 62.8% 30.6%; /* #7F1D1D */
+  --red-950: 0 74.7% 15.5%; /* #450A0A */
+
+  /* Social networks' brand colours (the footer's social cards on hover). */
+  --social-youtube: 0 100% 50%; /* #FF0000 */
+  --social-discord: 235 86% 65%; /* #5865F2 */
+  --social-substack: 20 100% 55%; /* #FF6719 */
+  --social-instagram-1: 45 98% 73%; /* #FEDA75 */
+  --social-instagram-2: 26 96% 55%; /* #FA7E1E */
+  --social-instagram-3: 333 69% 50%; /* #D62976 */
+  --social-instagram-4: 283 60% 47%; /* #962FBF */
+  --social-instagram-5: 235 61% 57%; /* #4F5BD5 */
+
+  /* AI tools' brand colours (the MCP page's tool logos sit on these). */
+  --tool-claude: 15 63% 60%; /* #D97757 */
+  --tool-chatgpt: 161 82% 35%; /* #10A37F */
+  --tool-codex: 243 75% 59%; /* #4F46E5 */
+  --tool-vscode: 204 100% 40%; /* #007ACC */
+  --tool-gemini: 211 74% 58%; /* #4796E3 */
+  --tool-windsurf: 173 88% 33%; /* #0A9E8D */
+  --tool-lmstudio: 247 88% 66%; /* #6D5BF5 */
+  --tool-muse: 217 100% 52%; /* #0866FF */
+  --tool-instinct: 25 95% 53%; /* #F97316 */
+
+  /* Amber */
+  --amber-50: 48 100% 96%; /* #FFFBEB */
+  --amber-100: 48 96.5% 88.8%; /* #FEF3C7 */
+  --amber-150: 47.9 97.7% 83.1%; /* #FEEDAA */
+  --amber-200: 48 96.6% 76.7%; /* #FDE68A */
+  --amber-300: 45.9 96.7% 64.5%; /* #FCD34D */
+  --amber-400: 43.3 96.4% 56.3%; /* #FBBF24 */
+  --amber-500: 37.7 92.1% 50.2%; /* #F59E0B */
+  --amber-600: 32.1 94.6% 43.7%; /* #D97706 */
+  --amber-700: 26 90.5% 37.1%; /* #B45309 */
+  --amber-800: 22.7 82.5% 31.4%; /* #92400E */
+  --amber-900: 21.7 77.8% 26.5%; /* #78350F */
+  --amber-950: 21 92% 14%; /* #451A03 */
+
+  /* Emerald */
+  --emerald-50: 151.8 81% 95.9%; /* #ECFDF5 */
+  --emerald-100: 149 80% 90%; /* #D1FAE5 */
+  --emerald-150: 150 78.4% 85.5%; /* #BDF7DA */
+  --emerald-200: 152.4 76% 80.4%; /* #A7F3D0 */
+  --emerald-300: 156 72% 67%; /* #6EE7B7 */
+  --emerald-400: 158.1 64.4% 51.6%; /* #34D399 */
+  --emerald-500: 160.1 84.1% 39.4%; /* #10B981 */
+  --emerald-600: 161.4 93.5% 30.4%; /* #059669 */
+  --emerald-700: 162.9 93.5% 24.3%; /* #047857 */
+  --emerald-800: 163.1 88.1% 19.8%; /* #065F46 */
+  --emerald-900: 164.2 85.7% 16.5%; /* #064E3B */
+  --emerald-950: 166 91% 9%; /* #022C22 */
+
+  /* Green (agents). Only 600 came from Figma; the rest is built around it in
+     OKLCH on emerald's lightness profile, so it is not Tailwind's green. */
+  --green-50: 137.6 63% 94.7%; /* #E9FAEE */
+  --green-100: 139 71.9% 88.8%; /* #CEF7DB */
+  --green-150: 138.9 72.2% 84.5%; /* #BBF4CD */
+  --green-200: 140.8 72.8% 79.8%; /* #A6F1C0 */
+  --green-300: 144.1 69.2% 66.9%; /* #70E59F */
+  --green-400: 148.8 62.9% 51.4%; /* #35D180 */
+  --green-500: 153.3 87.7% 38.2%; /* #0CB76B */
+  --green-600: 153.2 91% 30.4%; /* #079455 */
+  --green-700: 150.9 77.4% 26.1%; /* #0F7644 */
+  --green-800: 149.2 72.2% 21.2%; /* #0F5D35 */
+  --green-900: 148.5 67% 17.8%; /* #0F4C2C */
+  --green-950: 146.7 75% 9.4%; /* #062A16 */
+
+  /* Blue */
+  --blue-50: 213.8 100% 96.9%; /* #EFF6FF */
+  --blue-100: 214.3 94.6% 92.7%; /* #DBEAFE */
+  --blue-150: 214.3 96.1% 90%; /* #CDE2FE */
+  --blue-200: 213.3 96.9% 87.3%; /* #BFDBFE */
+  --blue-300: 211.7 96.4% 78.4%; /* #93C5FD */
+  --blue-400: 213.1 93.9% 67.8%; /* #60A5FA */
+  --blue-500: 217.2 91.2% 59.8%; /* #3B82F6 */
+  --blue-600: 221.2 83.2% 53.3%; /* #2563EB */
+  --blue-700: 224.3 76.3% 48%; /* #1D4ED8 */
+  --blue-800: 225.9 70.7% 40.2%; /* #1E40AF */
+  --blue-900: 224.4 64.3% 32.9%; /* #1E3A8A */
+  --blue-950: 226 57% 21%; /* #172554 */
+
+  /* Slate: one step, for the initial avatar (Tailwind slate-700). */
+  --slate-700: 215.3 25% 26.7%; /* #334155 */
+
+  /* Violet */
+  --violet-50: 250 100% 97.6%; /* #F5F3FF */
+  --violet-100: 251.4 91.3% 95.5%; /* #EDE9FE */
+  --violet-150: 251.6 93.9% 93.5%; /* #E5DFFE */
+  --violet-200: 250.5 95.2% 91.8%; /* #DDD6FE */
+  --violet-300: 252.5 94.7% 85.1%; /* #C4B5FD */
+  --violet-400: 255.1 91.7% 76.3%; /* #A78BFA */
+  --violet-500: 258.3 89.5% 66.3%; /* #8B5CF6 */
+  --violet-600: 262.1 83.3% 57.8%; /* #7C3AED */
+  --violet-700: 263.4 70% 50.4%; /* #6D28D9 */
+  --violet-800: 263.4 69.3% 42.2%; /* #5B21B6 */
+  --violet-900: 263.5 67.4% 34.9%; /* #4C1D95 */
+  --violet-950: 244 47% 20%; /* #1E1B4B */
+
+  /* Indigo: Tailwind's ramp. indigo-950 is the same hex it was as a violet alias. */
+  --indigo-50: 225.9 100% 96.7%; /* #EEF2FF */
+  --indigo-100: 226.5 100% 93.9%; /* #E0E7FF */
+  --indigo-150: 226.4 100% 91.4%; /* #D3DDFF */
+  --indigo-200: 228 96.5% 88.8%; /* #C7D2FE */
+  --indigo-300: 229.7 93.5% 81.8%; /* #A5B4FC */
+  --indigo-400: 234.5 89.5% 73.9%; /* #818CF8 */
+  --indigo-500: 238.7 83.5% 66.7%; /* #6366F1 */
+  --indigo-600: 243.4 75.4% 58.6%; /* #4F46E5 */
+  --indigo-700: 244.5 57.9% 50.6%; /* #4338CA */
+  --indigo-800: 243.7 54.5% 41.4%; /* #3730A3 */
+  --indigo-900: 242.2 47.4% 34.3%; /* #312E81 */
+  --indigo-950: 243.8 47.1% 20%; /* #1E1B4B */
+  /* Voice blobs (components/ui/audio, .voice-blob in theme.css): muted,
+     photographic tones after ElevenLabs' voice avatars, four per blob:
+     base, then three soft lights. The same in both themes. */
+  --blob-sand-base: 17.6 16.8% 19.8%; /* #3B2F2A */
+  --blob-sand-a: 33.2 26.0% 71.4%; /* #C9B8A3 */
+  --blob-sand-b: 19.6 29.7% 32.4%; /* #6B4A3A */
+  --blob-sand-c: 35.6 45.8% 88.4%; /* #EFE4D4 */
+  --blob-mist-base: 188.3 29.5% 23.9%; /* #2B4A4F */
+  --blob-mist-a: 175.4 37.1% 72.5%; /* #9FD3CF */
+  --blob-mist-b: 167.1 33.3% 91.8%; /* #E3F1EE */
+  --blob-mist-c: 186.3 26.5% 42.2%; /* #4F8288 */
+  --blob-wine-base: 5.7 41.2% 10.0%; /* #24110F */
+  --blob-wine-a: 0.0 45.2% 32.9%; /* #7A2E2E */
+  --blob-wine-b: 14.1 42.9% 62.9%; /* #C98B78 */
+  --blob-wine-c: 355.8 41.0% 20.6%; /* #4A1F22 */
+  --blob-peach-base: 21.1 43.5% 33.3%; /* #7A4A30 */
+  --blob-peach-a: 27.0 72.7% 78.4%; /* #F0C4A0 */
+  --blob-peach-b: 23.0 39.4% 50.8%; /* #B37650 */
+  --blob-peach-c: 32.7 100.0% 93.5%; /* #FFF0DE */
+  --blob-dusk-base: 216.9 31.7% 16.1%; /* #1C2636 */
+  --blob-dusk-a: 210.5 25.5% 50.0%; /* #5F7FA0 */
+  --blob-dusk-b: 208.8 31.6% 84.5%; /* #CBD8E4 */
+  --blob-dusk-c: 214.3 30.4% 27.1%; /* #30425A */
+  --blob-olive-base: 65.7 27.3% 15.1%; /* #2F311C */
+  --blob-olive-a: 64.4 22.7% 46.7%; /* #8E925C */
+  --blob-olive-b: 52.8 39.1% 74.9%; /* #D8D2A6 */
+  --blob-olive-c: 66.0 29.9% 26.3%; /* #53572F */
+  --blob-lilac-base: 264.5 20.0% 21.6%; /* #352C42 */
+  --blob-lilac-a: 267.8 28.7% 72.0%; /* #B6A3CC */
+  --blob-lilac-b: 285.0 35.3% 93.3%; /* #F1E8F4 */
+  --blob-lilac-c: 267.3 20.0% 43.1%; /* #6C5884 */
+  --blob-smoke-base: 240.0 5.7% 10.4%; /* #19191C */
+  --blob-smoke-a: 240.0 5.2% 38.0%; /* #5C5C66 */
+  --blob-smoke-b: 240.0 5.6% 72.2%; /* #B4B4BC */
+  --blob-smoke-c: 240.0 6.1% 19.2%; /* #2E2E34 */
+  /* Voice auras (components/ui/audio/voice-aura-card.tsx): two lights per
+     voice, rising under a white core, after the layered-blur glow studies.
+     Toned down (about two thirds the saturation) so a grid of them stays calm.
+     The hex comments are the full-strength studies they came from. */
+  --aura-fire-a: 0.0 68.0% 59.2%; /* #FF3636 */
+  --aura-fire-b: 51.9 68.0% 59.2%; /* #FFE436 */
+  --aura-violet-a: 262.1 68.0% 55.2%; /* #6F1BFF */
+  --aura-violet-b: 294.9 68.0% 59.2%; /* #EE36FF */
+  --aura-ocean-a: 240.0 53.7% 53.7%; /* #2A2AE6 */
+  --aura-ocean-b: 192.9 68.0% 51.2%; /* #00C8FF */
+  --aura-lime-a: 115.9 68.0% 43.9%; /* #0ECD00 */
+  --aura-lime-b: 79.1 68.0% 51.2%; /* #AEFF00 */
+  --aura-ember-a: 17.2 53.5% 51.0%; /* #E2541B */
+  --aura-ember-b: 29.2 68.0% 67.0%; /* #FFB36B */
+  --aura-rose-a: 288.2 68.0% 55.2%; /* #D21BFF */
+  --aura-rose-b: 317.1 68.0% 69.2%; /* #FF7AD9 */
+  --aura-lagoon-a: 170.7 68.0% 38.4%; /* #00A88E */
+  --aura-lagoon-b: 162.0 68.0% 69.6%; /* #7DFFD8 */
+  --aura-iris-a: 243.3 68.0% 59.5%; /* #4338FF */
+  --aura-iris-b: 255.1 62.4% 71.0%; /* #A78BFA */
+  /* More variety (Oct 2026), the warm ones yellow like the brand. */
+  --aura-sun-a: 46.1 68.0% 50.0%; /* #FFC400 */
+  --aura-sun-b: 53.9 68.0% 73.1%; /* #FFF176 */
+  --aura-honey-a: 37.7 68.0% 50.2%; /* #F59E0B */
+  --aura-honey-b: 48.0 68.0% 76.7%; /* #FDE68A */
+  --aura-coral-a: 358.2 68.0% 67.6%; /* #FF5A5F */
+  --aura-coral-b: 14.1 68.0% 80.0%; /* #FFB199 */
+  --aura-sky-a: 209.6 68.0% 55.9%; /* #1E90FF */
+  --aura-sky-b: 203.2 68.0% 80.2%; /* #9AD8FF */
+  --aura-cherry-a: 346.8 68.0% 49.8%; /* #E11D48 */
+  --aura-cherry-b: 352.6 68.0% 81.8%; /* #FDA4AF */
+  --aura-citrus-a: 47.9 68.0% 53.1%; /* #FACC15 */
+  --aura-citrus-b: 141.9 68.0% 58.0%; /* #4ADE80 */
+}

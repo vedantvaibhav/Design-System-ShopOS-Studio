@@ -100,8 +100,12 @@ for (const [id, src] of picked) {
     }
 
     // The skill's name must match its folder here, whatever it is called upstream.
-    const skill = readFileSync(join(base, src.skill), "utf8");
-    if (!/^---\r?\n[\s\S]*?^name:/m.test(skill)) throw new Error(`${src.skill} has no frontmatter name`);
+    let skill = readFileSync(join(base, src.skill), "utf8");
+    if (!/^---\r?\n/.test(skill) && src.description) {
+      // A docs index with no skill header gets one from sources.json.
+      skill = `---\nname: ${id}\ndescription: ${JSON.stringify(src.description)}\n---\n\n${skill}`;
+    }
+    if (!/^---\r?\n[\s\S]*?^name:/m.test(skill)) throw new Error(`${src.skill} has no frontmatter name (add "description" to its sources.json entry)`);
     writeFileSync(join(out, "SKILL.md"), skill.replace(/^(---\r?\n[\s\S]*?^name:).*$/m, `$1 ${id}`));
 
     const warnings = [];

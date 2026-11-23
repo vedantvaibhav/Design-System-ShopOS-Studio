@@ -1,0 +1,2588 @@
+/* ==========================================================================
+   THEME: Tailwind v4 mapping, utilities, keyframes and base rules.
+   Ported from production packages/ui/src/theme.css plus the Sloosh app's
+   own additions (apps/sloosh/app/globals.css), Sloosh only.
+
+   Token VALUES live in tokens/primitives.css and tokens/semantic.css. This
+   file only says which Tailwind class reads which token
+   (--color-card -> bg-card), plus non-colour theme values (type scale,
+   radii, shadows, animations), custom utilities and base rules.
+
+   Dropped from production (see DESIGN_SYSTEM.md, "What was dropped"):
+   the deprecated legacy-tokens.css layer and its --color-* mappings,
+   ShopOS-only colours (Enterprise Recap, GEO, the ShopOS sidebar), the
+   ShopOS gradients (bg-shopos-gradient, bg-accent-duo-gradient,
+   bg-red-gradient, bg-folder-gradient) and the dead `toaster` utility.
+   ========================================================================== */
+@plugin "@tailwindcss/typography";
+@import "./tokens/primitives.css";
+@import "./tokens/semantic.css";
+@import "./tokens/ds2.css";
+
+/* `dark:` reads <html class="dark">, which lib/theme.ts keeps in step with
+   data-theme (dark by default; the light theme removes it). */
+@custom-variant dark (&:is(.dark *));
+
+/* Safelist: aspect-ratio classes are built dynamically (see workflows), so Tailwind
+   can't see them in source — force-generate them (v4 replacement for v3 safelist). */
+@source inline("aspect-[{174/310,1/1,2/3,3/2,16/9,9/16,4/3,3/4,4/5,5/4,21/9,97/30}]");
+
+/* A sonner toast that is not toast.custom(): custom JSX is an element inside
+   [data-title], a plain title is text. The Toaster's card styles use it. */
+@custom-variant toast-card (&:not(:has([data-title] > *)));
+
+/* Production: the shape only Sloosh-branded pages take ([data-brand="sloosh"]
+   on Sloosh's <html>), for a shared component whose Figma differs per
+   product. Here every page is Sloosh and <html> always carries the
+   attribute, so the variant is effectively always on. Kept (with its
+   specificity bump) so classes copied from production still work; the
+   ported components in components/ui/ have it resolved away. */
+@custom-variant brand-sloosh ([data-brand="sloosh"] &);
+
+/* DS4: a keycap that is disabled (or aria-disabled) and not loading. A
+   loading button (aria-busy, or Button's isLoading) keeps its style; a
+   disabled one takes the style's disabled look (button-variants.ts). */
+@custom-variant keycap-disabled (&:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], [data-loading]));
+
+/* ==========================================================================
+   Colors — @theme inline so utilities resolve to the underlying token var
+   (matches pro-admin) and color-mix() opacity works against the resolved
+   color. Every alpha-channel placeholder from the old config values is
+   dropped. Entries already `var(--x)` stay as-is.
+   ========================================================================== */
+@theme inline {
+  /* fonts (DS4): the stacks live in tokens/semantic.css (--sl-font-*);
+     next/font sets the Bricolage Grotesque and Caveat families on <html>
+     (app/layout.tsx). font-sans is the body (SF Pro stack), font-display
+     Bricolage Grotesque (the text-display-* classes set it themselves), font-hand
+     Caveat (the text-hand-* classes set it themselves). */
+  --font-sans:
+    var(--sl-font-sans), "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: var(--sl-font-display);
+  --font-hand: var(--sl-font-hand);
+  /* font-mono: code only (text-code sets it itself). */
+  --font-mono: var(--sl-font-mono);
+
+  --color-neutral-0: hsl(var(--neutral-0));
+  --color-neutral-50: hsl(var(--neutral-50));
+  --color-neutral-100: hsl(var(--neutral-100));
+  --color-neutral-150: hsl(var(--neutral-150));
+  --color-neutral-200: hsl(var(--neutral-200));
+  --color-neutral-300: hsl(var(--neutral-300));
+  --color-neutral-400: hsl(var(--neutral-400));
+  --color-neutral-500: hsl(var(--neutral-500));
+  --color-neutral-600: hsl(var(--neutral-600));
+  --color-neutral-700: hsl(var(--neutral-700));
+  --color-neutral-800: hsl(var(--neutral-800));
+  --color-neutral-900: hsl(var(--neutral-900));
+  --color-neutral-950: hsl(var(--neutral-950));
+
+  /* creative-gen-accent: the Sloosh yellow ramp (DS4) */
+  --color-creative-gen-accent-50: hsl(var(--creative-gen-accent-50));
+  --color-creative-gen-accent-100: hsl(var(--creative-gen-accent-100));
+  --color-creative-gen-accent-200: hsl(var(--creative-gen-accent-200));
+  --color-creative-gen-accent-300: hsl(var(--creative-gen-accent-300));
+  --color-creative-gen-accent-400: hsl(var(--creative-gen-accent-400));
+  --color-creative-gen-accent-500: hsl(var(--creative-gen-accent-500));
+  --color-creative-gen-accent-600: hsl(var(--creative-gen-accent-600));
+  --color-creative-gen-accent-700: hsl(var(--creative-gen-accent-700));
+  --color-creative-gen-accent-800: hsl(var(--creative-gen-accent-800));
+
+  /* yellow: Tailwind's yellow ramp (DS4; status, not the brand) */
+  --color-yellow-50: hsl(var(--yellow-50));
+  --color-yellow-100: hsl(var(--yellow-100));
+  --color-yellow-200: hsl(var(--yellow-200));
+  --color-yellow-300: hsl(var(--yellow-300));
+  --color-yellow-400: hsl(var(--yellow-400));
+  --color-yellow-500: hsl(var(--yellow-500));
+  --color-yellow-600: hsl(var(--yellow-600));
+  --color-yellow-700: hsl(var(--yellow-700));
+  --color-yellow-800: hsl(var(--yellow-800));
+  --color-yellow-900: hsl(var(--yellow-900));
+  --color-yellow-950: hsl(var(--yellow-950));
+
+  /* red scale */
+  --color-red-50: hsl(var(--red-50));
+  --color-red-100: hsl(var(--red-100));
+  --color-red-200: hsl(var(--red-200));
+  --color-red-300: hsl(var(--red-300));
+  --color-red-400: hsl(var(--red-400));
+  --color-red-500: hsl(var(--red-500));
+  --color-red-600: hsl(var(--red-600));
+  --color-red-700: hsl(var(--red-700));
+  --color-red-800: hsl(var(--red-800));
+  --color-red-900: hsl(var(--red-900));
+  --color-red-950: hsl(var(--red-950));
+
+  /* amber scale */
+  --color-amber-50: hsl(var(--amber-50));
+  --color-amber-100: hsl(var(--amber-100));
+  --color-amber-200: hsl(var(--amber-200));
+  --color-amber-300: hsl(var(--amber-300));
+  --color-amber-400: hsl(var(--amber-400));
+  --color-amber-500: hsl(var(--amber-500));
+  --color-amber-600: hsl(var(--amber-600));
+  --color-amber-700: hsl(var(--amber-700));
+  --color-amber-800: hsl(var(--amber-800));
+  --color-amber-900: hsl(var(--amber-900));
+  --color-amber-950: hsl(var(--amber-950));
+
+  /* emerald scale */
+  --color-emerald-50: hsl(var(--emerald-50));
+  --color-emerald-100: hsl(var(--emerald-100));
+  --color-emerald-200: hsl(var(--emerald-200));
+  --color-emerald-300: hsl(var(--emerald-300));
+  --color-emerald-400: hsl(var(--emerald-400));
+  --color-emerald-500: hsl(var(--emerald-500));
+  --color-emerald-600: hsl(var(--emerald-600));
+  --color-emerald-700: hsl(var(--emerald-700));
+  --color-emerald-800: hsl(var(--emerald-800));
+  --color-emerald-900: hsl(var(--emerald-900));
+  --color-emerald-950: hsl(var(--emerald-950));
+
+  /* green */
+  --color-green-600: hsl(var(--green-600));
+
+  /* blue scale */
+  --color-blue-50: hsl(var(--blue-50));
+  --color-blue-100: hsl(var(--blue-100));
+  --color-blue-200: hsl(var(--blue-200));
+  --color-blue-300: hsl(var(--blue-300));
+  --color-blue-400: hsl(var(--blue-400));
+  --color-blue-500: hsl(var(--blue-500));
+  --color-blue-600: hsl(var(--blue-600));
+  --color-blue-700: hsl(var(--blue-700));
+  --color-blue-800: hsl(var(--blue-800));
+  --color-blue-900: hsl(var(--blue-900));
+  --color-blue-950: hsl(var(--blue-950));
+
+  /* violet scale */
+  --color-violet-50: hsl(var(--violet-50));
+  --color-violet-100: hsl(var(--violet-100));
+  --color-violet-200: hsl(var(--violet-200));
+  --color-violet-300: hsl(var(--violet-300));
+  --color-violet-400: hsl(var(--violet-400));
+  --color-violet-500: hsl(var(--violet-500));
+  --color-violet-600: hsl(var(--violet-600));
+  --color-violet-700: hsl(var(--violet-700));
+  --color-violet-800: hsl(var(--violet-800));
+  --color-violet-900: hsl(var(--violet-900));
+  --color-violet-950: hsl(var(--violet-950));
+  /* semantic singletons */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-surface-muted: hsl(var(--surface-muted));
+  --color-surface-accent: hsl(var(--surface-accent));
+  --color-surface-border: hsl(var(--surface-border));
+  --color-border-strong: hsl(var(--border-strong));
+  --color-foreground: hsl(var(--foreground));
+  --color-foreground-subtle: hsl(var(--foreground-subtle));
+
+  /* primary */
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  /* secondary */
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  /* destructive */
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: hsl(var(--destructive-border));
+  --color-destructive-subtle: hsl(var(--destructive-subtle));
+  --color-destructive-subtle-foreground: hsl(
+    var(--destructive-subtle-foreground)
+  );
+
+  /* brand accent: Sloosh yellow (semantic.css) */
+  --color-brand-accent: hsl(var(--brand-accent));
+  --color-brand-accent-foreground: hsl(var(--brand-accent-foreground));
+  --color-brand-accent-edge: hsl(var(--brand-accent-edge));
+  --color-brand-accent-text: hsl(var(--brand-accent-text));
+  --color-brand-accent-label: hsl(var(--brand-accent-label));
+  --color-image-edge: var(--image-edge);
+  --color-brand-accent-subtle: var(--brand-accent-subtle);
+  --color-silver-sheen: var(--silver-sheen);
+  --color-silver-sheen-soft: var(--silver-sheen-soft);
+  --color-picked-pill: var(--picked-pill);
+  --color-picked-pill-foreground: hsl(var(--picked-pill-foreground));
+  --color-brand-accent-ring: hsl(var(--brand-accent-ring));
+  /* Space form tiles (semantic.css): the picked ring / required *, the raised key */
+  --color-picked-ring: hsl(var(--picked-ring));
+  --color-key-face: hsl(var(--key-face));
+  --color-key-face-hover: hsl(var(--key-face-hover));
+  --color-brand-accent-chip: var(--brand-accent-chip);
+  /* Opaque amber under the credit banner (Sloosh app globals.css). */
+  --color-brand-accent-surface: hsl(var(--brand-accent-surface));
+  --color-brand-favorite: var(--brand-favorite);
+  /* DS4 brand additions (semantic.css) */
+  --color-brand-accent-subtle-hover: var(--brand-accent-subtle-hover);
+  --color-brand-accent-disabled: var(--brand-accent-disabled);
+  --color-brand-accent-disabled-foreground: hsl(var(--brand-accent-disabled-foreground));
+  --color-brand-accent-disabled-edge: hsl(var(--brand-accent-disabled-edge));
+  --color-brand-accent-disabled-pill: var(--brand-accent-disabled-pill);
+  --color-brand-accent-pill: var(--brand-accent-pill);
+  --color-brand-accent-glow: var(--brand-accent-glow);
+  --color-brand-accent-light: var(--brand-accent-light);
+  /* the drawn layer: lines, notes, eye whites, critter shadow */
+  --color-brand-line: var(--brand-line);
+  --color-brand-line-soft: var(--brand-line-soft);
+  --color-brand-line-faint: var(--brand-line-faint);
+  --color-brand-note: var(--brand-note);
+  --color-brand-eye-white: var(--brand-eye-white);
+  --color-brand-shadow: var(--brand-shadow);
+  /* glows */
+  --color-brand-glow-light: var(--brand-glow-light);
+  --color-brand-glow: var(--brand-glow);
+  --color-brand-glow-deep: var(--brand-glow-deep);
+  /* filter accents */
+  --color-brand-filter-accent-1: var(--brand-filter-accent-1);
+  --color-brand-filter-accent-2: var(--brand-filter-accent-2);
+  --color-brand-filter-accent-3: var(--brand-filter-accent-3);
+  --color-brand-filter-accent-4: var(--brand-filter-accent-4);
+  --color-brand-filter-accent-5: var(--brand-filter-accent-5);
+  --color-brand-filter-accent-6: var(--brand-filter-accent-6);
+  /* Jam sizes (semantic.css "Sizing"): w-jam-tray, w-jam-modal */
+  --container-jam-tray: var(--sl-jam-tray-w);
+  --container-jam-modal: var(--sl-jam-modal-w);
+  /* Explore's content column (semantic.css "Sizing"): max-w-home */
+  --container-home: var(--sl-home-wrap);
+  /* paper (semantic.css "Paper"): the Jam ticket stub */
+  --color-paper: hsl(var(--paper));
+  --color-paper-foreground: hsl(var(--paper-foreground));
+  --color-paper-muted: hsl(var(--paper-muted));
+  --color-paper-line: hsl(var(--paper-line));
+  --color-paper-tag: hsl(var(--paper-tag));
+  --color-paper-ink: hsl(var(--paper-ink));
+  /* full colour: transparent on dark, a hairline on light */
+  --color-paper-edge: var(--paper-edge);
+  /* the logo's lip (full colour: transparent on dark) */
+  --color-logo-lip: var(--logo-lip);
+  /* the model logo tile (light in both themes) */
+  --color-model-badge: hsl(var(--model-badge));
+  --color-model-badge-foreground: hsl(var(--model-badge-foreground));
+  /* app-icon tiles (semantic.css): a white glyph on a solid colour, both themes */
+  --color-app-tile-foreground: hsl(var(--app-tile-foreground));
+  --color-app-tile-blue: hsl(var(--app-tile-blue));
+  --color-app-tile-violet: hsl(var(--app-tile-violet));
+  --color-app-tile-red: hsl(var(--app-tile-red));
+  --color-app-tile-green: hsl(var(--app-tile-green));
+  --color-app-tile-orange: hsl(var(--app-tile-orange));
+  --color-app-tile-indigo: hsl(var(--app-tile-indigo));
+  --color-app-tile-grey: hsl(var(--app-tile-grey));
+  /* grounds (semantic.css "GROUNDS"): a card on a contrasting colour */
+  --color-ground: hsl(var(--ground));
+  --color-ground-panel: hsl(var(--ground-panel));
+  --color-ground-chip: hsl(var(--ground-chip));
+  --color-ground-line: hsl(var(--ground-line));
+  --color-ground-faint: hsl(var(--ground-faint));
+  --color-ground-mark: hsl(var(--ground-mark));
+  /* savings pill, ink button lip (DS4) */
+  --color-savings: hsl(var(--savings));
+  --color-savings-foreground: hsl(var(--savings-foreground));
+  --color-ink: hsl(var(--ink));
+  --color-ink-foreground: hsl(var(--ink-foreground));
+  --color-ink-hover: hsl(var(--ink-hover));
+  --color-ink-edge: hsl(var(--ink-edge));
+  --color-ink-disabled: hsl(var(--ink-disabled));
+  --color-ink-disabled-foreground: hsl(var(--ink-disabled-foreground));
+  --color-award-key: hsl(var(--award-key));
+  --color-award-key-foreground: hsl(var(--award-key-foreground));
+  /* The Black Friday sale (components/sale/sale.css has its chrome, iris and pill). */
+  --color-sale-muted: hsl(var(--sale-muted));
+  /* status yellow, agents, data types (DS4) */
+  --color-status-yellow: hsl(var(--status-yellow));
+  --color-status-yellow-foreground: hsl(var(--status-yellow-foreground));
+  --color-status-yellow-border: hsl(var(--status-yellow-border));
+  --color-action-brand-foreground: hsl(var(--action-brand-foreground));
+  --color-agent: hsl(var(--agent));
+  --color-agents-amber: hsl(var(--agents-amber));
+  --color-agents-red: hsl(var(--agents-red));
+  --color-agents-green: hsl(var(--agents-green));
+  --color-agents-blue: hsl(var(--agents-blue));
+  --color-agents-yellow: hsl(var(--agents-yellow));
+  /* A tool's own colour, for its mark (Claude's orange): text-tool-claude. */
+  --color-tool-claude: hsl(var(--tool-claude));
+  --color-social-youtube: hsl(var(--social-youtube));
+  --color-social-discord: hsl(var(--social-discord));
+  --color-social-substack: hsl(var(--social-substack));
+  --color-social-instagram-1: hsl(var(--social-instagram-1));
+  --color-social-instagram-2: hsl(var(--social-instagram-2));
+  --color-social-instagram-3: hsl(var(--social-instagram-3));
+  --color-social-instagram-4: hsl(var(--social-instagram-4));
+  --color-social-instagram-5: hsl(var(--social-instagram-5));
+  --color-text-shimmer-base: var(--text-shimmer-base);
+  --color-data-text: hsl(var(--data-text));
+  --color-data-text-foreground: hsl(var(--data-text-foreground));
+  --color-data-image: hsl(var(--data-image));
+  --color-data-image-foreground: hsl(var(--data-image-foreground));
+  --color-data-video: hsl(var(--data-video));
+  --color-data-video-foreground: hsl(var(--data-video-foreground));
+  --color-data-audio: hsl(var(--data-audio));
+  --color-data-audio-foreground: hsl(var(--data-audio-foreground));
+  --color-data-any: hsl(var(--data-any));
+  --color-data-any-foreground: hsl(var(--data-any-foreground));
+  --color-dialog-overlay: var(--dialog-overlay);
+  --color-dialog-overlay-strong: var(--dialog-overlay-strong);
+  --color-drawer-overlay: var(--drawer-overlay);
+  /* on media (semantic.css): text and shades over photos and videos */
+  --color-on-media: hsl(var(--on-media));
+  --color-on-media-muted: hsl(var(--on-media-muted));
+  --color-app-claude: hsl(var(--app-claude));
+  --color-media-scrim: hsl(var(--media-scrim));
+  /* gradual blur (semantic.css): its tint and the text on it, per theme */
+  --color-blur-scrim: hsl(var(--blur-scrim));
+  --color-on-blur: hsl(var(--on-blur));
+  --color-on-blur-muted: hsl(var(--on-blur-muted));
+  /* toast card (components/ui/toaster.tsx) */
+  --color-toast: hsl(var(--toast));
+  --color-toast-foreground: hsl(var(--toast-foreground));
+  --color-toast-muted: hsl(var(--toast-muted));
+  --color-toast-success: hsl(var(--toast-success));
+  --color-toast-error: hsl(var(--toast-error));
+  --color-toast-warning: hsl(var(--toast-warning));
+  --color-toast-info: hsl(var(--toast-info));
+  /* controls */
+  --color-switch-thumb: hsl(var(--switch-thumb));
+  --color-raised: hsl(var(--raised));
+  --color-raised-end: hsl(var(--raised-end));
+  --color-raised-foreground: hsl(var(--raised-foreground));
+  --color-raised-border: hsl(var(--raised-border));
+  /* phone layers (semantic-tokens.css --layer-*) */
+  --color-layer-1: var(--layer-1);
+  --color-layer-2: var(--layer-2);
+  --color-layer-3: var(--layer-3);
+  --color-layer-4: var(--layer-4);
+  --color-layer-line: var(--layer-line);
+  --color-layer-line-strong: var(--layer-line-strong);
+  --color-layer-dim: var(--layer-dim);
+  --color-layer-scrim: var(--layer-scrim);
+  --color-layer-warn: var(--layer-warn);
+  --color-layer-warn-foreground: var(--layer-warn-foreground);
+
+  /* disabled / surface */
+  --color-disabled-foreground: hsl(var(--disabled-foreground));
+  --color-disabled-border: hsl(var(--disabled-border));
+  --color-surface-disabled: hsl(var(--surface-disabled));
+
+  /* warning */
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-warning-border: hsl(var(--warning-border));
+
+  /* success */
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-success-border: hsl(var(--success-border));
+
+  /* info */
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+  --color-info-border: hsl(var(--info-border));
+
+  /* violet */
+  --color-avatar: hsl(var(--avatar));
+  --color-avatar-foreground: hsl(var(--avatar-foreground));
+  --color-avatar-blue: hsl(var(--avatar-blue));
+  --color-avatar-blue-foreground: hsl(var(--avatar-blue-foreground));
+  --color-avatar-emerald: hsl(var(--avatar-emerald));
+  --color-avatar-emerald-foreground: hsl(var(--avatar-emerald-foreground));
+  --color-avatar-amber: hsl(var(--avatar-amber));
+  --color-avatar-amber-foreground: hsl(var(--avatar-amber-foreground));
+  --color-avatar-violet: hsl(var(--avatar-violet));
+  --color-avatar-violet-foreground: hsl(var(--avatar-violet-foreground));
+  --color-avatar-red: hsl(var(--avatar-red));
+  --color-avatar-red-foreground: hsl(var(--avatar-red-foreground));
+  --color-avatar-indigo: hsl(var(--avatar-indigo));
+  --color-avatar-indigo-foreground: hsl(var(--avatar-indigo-foreground));
+  --color-violet: hsl(var(--violet));
+  --color-violet-foreground: hsl(var(--violet-foreground));
+  --color-violet-border: hsl(var(--violet-border));
+
+
+  /* muted */
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  /* accent */
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  /* popover */
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  /* card */
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  /* chart */
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  /* sidebar (item-hover / etc. alpha placeholder dropped) */
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  /* DS2: the status sets' canonical names, green / indigo / brand sets, and
+     utilities for tokens that had none (edges, glint, toast action...). */
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
+  --color-primary-edge: hsl(var(--primary-edge));
+  --color-secondary-edge: hsl(var(--secondary-edge));
+  --color-destructive-edge: hsl(var(--destructive-edge));
+  --color-brand-accent-hover: hsl(var(--brand-accent-hover));
+  --color-keycap-shine: var(--keycap-shine);
+  --color-keycap-shine-soft: var(--keycap-shine-soft);
+  --color-success-subtle: hsl(var(--success-subtle));
+  --color-success-subtle-foreground: hsl(var(--success-subtle-foreground));
+  --color-warning-subtle: hsl(var(--warning-subtle));
+  --color-warning-subtle-foreground: hsl(var(--warning-subtle-foreground));
+  --color-info-subtle: hsl(var(--info-subtle));
+  --color-info-subtle-foreground: hsl(var(--info-subtle-foreground));
+  --color-violet-subtle: hsl(var(--violet-subtle));
+  --color-violet-subtle-foreground: hsl(var(--violet-subtle-foreground));
+  --color-brand-accent-subtle-foreground: hsl(var(--brand-accent-subtle-foreground));
+  --color-brand-accent-border: hsl(var(--brand-accent-border));
+  --color-critter-line: var(--critter-line);
+  --color-critter-shadow: var(--critter-shadow);
+  --color-toast-action: var(--toast-action);
+  --color-toast-action-foreground: var(--toast-action-foreground);
+
+  /* DS2 primitive steps (150 on every ramp, green and indigo ramps). */
+  --color-creative-gen-accent-150: hsl(var(--creative-gen-accent-150));
+  --color-creative-gen-accent-900: hsl(var(--creative-gen-accent-900));
+  --color-creative-gen-accent-950: hsl(var(--creative-gen-accent-950));
+  --color-yellow-150: hsl(var(--yellow-150));
+  --color-red-150: hsl(var(--red-150));
+  --color-amber-150: hsl(var(--amber-150));
+  --color-emerald-150: hsl(var(--emerald-150));
+  --color-green-50: hsl(var(--green-50));
+  --color-green-100: hsl(var(--green-100));
+  --color-green-150: hsl(var(--green-150));
+  --color-green-200: hsl(var(--green-200));
+  --color-green-300: hsl(var(--green-300));
+  --color-green-400: hsl(var(--green-400));
+  --color-green-500: hsl(var(--green-500));
+  --color-green-700: hsl(var(--green-700));
+  --color-green-800: hsl(var(--green-800));
+  --color-green-900: hsl(var(--green-900));
+  --color-green-950: hsl(var(--green-950));
+  --color-blue-150: hsl(var(--blue-150));
+  --color-violet-150: hsl(var(--violet-150));
+  --color-indigo-50: hsl(var(--indigo-50));
+  --color-indigo-100: hsl(var(--indigo-100));
+  --color-indigo-150: hsl(var(--indigo-150));
+  --color-indigo-200: hsl(var(--indigo-200));
+  --color-indigo-300: hsl(var(--indigo-300));
+  --color-indigo-400: hsl(var(--indigo-400));
+  --color-indigo-500: hsl(var(--indigo-500));
+  --color-indigo-600: hsl(var(--indigo-600));
+  --color-indigo-700: hsl(var(--indigo-700));
+  --color-indigo-800: hsl(var(--indigo-800));
+  --color-indigo-900: hsl(var(--indigo-900));
+  --color-indigo-950: hsl(var(--indigo-950));
+
+}
+
+/* ==========================================================================
+   Non-color theme values
+   ========================================================================== */
+@theme {
+  /* animations used by package components */
+  --animate-space-card-reveal: space-card-reveal 0.6s
+    cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Sloosh's still animals (loader stills, capped avatars): a gentle bob. */
+  --animate-critter-idle: critter-idle 3s ease-in-out infinite;
+
+  /* screens: rem like Tailwind's own, or the rules sort out of order
+     (theme-breakpoints.test.ts) */
+  --breakpoint-xs: 26.875rem;
+  --breakpoint-2xl: 87.5rem;
+  /* The navbar's Docs / Assets / credits words show from here (the tabs need the room). */
+  --breakpoint-3xl: 100rem;
+
+  /* Type (DS4). One scale for every face: 12 14 16 20 24 36 48 60.
+     Each size carries its DS4 line height and weight, so `text-sm` alone is
+     14px, 500, 140%. A font-* or leading-* class next to it still wins.
+     The display and hand steps are @utility blocks below (they also set
+     the font family): text-display-20/24/36/48/60, text-hand-16/20/24/36/48.
+     Removed in DS4: text-display-28 and text-display-32 (use 24 / 36). */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--font-weight: 500;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.4;
+  --text-sm--font-weight: 500;
+  --text-base: 1rem;
+  --text-base--line-height: 1.4;
+  --text-base--font-weight: 500;
+  --text-text-20: 1.25rem;
+  --text-text-20--line-height: 1.2;
+  --text-text-20--font-weight: 600;
+
+  /* spacing */
+  --spacing-30: 7.5rem;
+
+  /* borderWidth: `border-edge`, a card's edge on the events pages' black, half
+     again a 1px hairline so it reads without a brighter colour (1.25px snaps
+     to 1px on 2x screens; 1.5px draws as 1.5). */
+  --border-width-edge: 1.5px;
+
+  /* borderRadius: every step is a multiple of --radius (semantic.css,
+     8px), so changing that one value rounds the whole app more or less
+     (0 makes everything square). The px in each comment is the value at
+     the default 8px; the DS4 scale is sm 4, md 6, lg 8, xl 12, 2xl 16,
+     panel 20, sheet 24. control and tile are the app's own in-between
+     steps (the mobile prototype), kept. */
+  --radius-xs: calc(var(--radius) * 0.25); /* 2px (DS2) */
+  --radius-sm: calc(var(--radius) * 0.5); /* 4px */
+  --radius-md: calc(var(--radius) * 0.75); /* 6px */
+  --radius-lg: var(--radius); /* 8px */
+  /* Every 36px control: keycaps, fields, tabs, filter triggers (a
+     control's corner follows its height: 8 up to 32, 10 at 36, 12 at 40+). */
+  --radius-control: calc(var(--radius) * 1.25); /* 10px */
+  --radius-xl: calc(var(--radius) * 1.5); /* 12px: cards, menu items, and controls 40px and taller */
+  /* Phone cards, the phone composer's tiles. */
+  --radius-tile: calc(var(--radius) * 1.75); /* 14px */
+  --radius-2xl: calc(var(--radius) * 2); /* 16px: dialogs, tab wells */
+  /* Floating panels, modals (Figma rounded-3xl, 20px). */
+  --radius-panel: calc(var(--radius) * 2.5); /* 20px */
+  /* A phone bottom sheet's top corners (DS4: 24, was 22). */
+  --radius-sheet: calc(var(--radius) * 3); /* 24px */
+  --radius-3xl: calc(var(--radius) * 3); /* 24px */
+  /* DS4: the hand-cut corner of sticky notes and the Stage. Not tied to
+     --radius. */
+  --radius-wobble: var(--sl-radius-wobble);
+
+  /* shadow */
+  --shadow-panel: 0 4px 24px 0 rgb(0 0 0 / 0.12);
+  /* A panel popped above the Studio composer (Camera Setup). */
+  --shadow-composer-pop: 0 4px 12px 0 rgb(0 0 0 / 0.24);
+  /* Soft drop under a resting surface (Studio composer). */
+  --shadow-surface: var(--sl-shadow-surface);
+  /* DS4 elevation (values in semantic.css, light has its own):
+     a panel or menu floating over content, a modal, the yellow halo
+     around a running node, and the keycap lips (2px up to a 36 button,
+     4px at 40 and 48). */
+  /* (shadow-float, -modal, -halo, -lip, -lip-lg: the @theme inline block below) */
+  /* The ink button's lips (black keycap on yellow). */
+  --shadow-ink-lip: inset 0 -2px 0 0 hsl(var(--ink-edge));
+  --shadow-ink-lip-lg: inset 0 -4px 0 0 hsl(var(--ink-edge));
+  /* Pre-DS4 names, kept. brand-lip is the same as lip. */
+  --shadow-brand-lip: inset 0 -2px 0 hsl(var(--brand-accent-edge));
+  /* The same lip on a dark muted button (pre-DS4 Login). */
+  --shadow-muted-lip: inset 0 -2px 0 hsl(var(--card));
+  /* The light raised fill's 4px lip, and its pressed 1px. */
+  --shadow-raised-lip: inset 0 -4px 0 0 hsl(var(--muted-foreground) / 0.3);
+  --shadow-raised-lip-pressed: inset 0 -1px 0 0 hsl(var(--muted-foreground) / 0.3);
+  /* A soft yellow glow around a small dot (the banner's live dot). */
+  --shadow-brand-glow: 0 0 12px hsl(var(--brand-accent));
+
+  /* animation */
+  --animate-slide-in-up: slide-in-up 0.3s ease-out;
+  --animate-slide-out-down: slide-out-down 0.3s ease-in;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-fade-out: fade-out 0.3s ease-in;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+  /* ShimmerText: a light passing across words that are working ("Reading your script"). */
+  --animate-text-shimmer: text-shimmer 2s linear infinite;
+  --animate-scan-glow: scan-glow 8s linear infinite;
+  --animate-spin-gradient: spin-gradient 2s linear infinite;
+  --animate-status-pulse: status-pulse 1.5s ease-in-out infinite;
+  --animate-recap-drift-left: recap-drift-left 78s linear infinite;
+  --animate-recap-drift-right: recap-drift-right 96s linear infinite;
+  /* The pricing model tape: one set of names scrolls by, then repeats. */
+  --animate-marquee: marquee 48s linear infinite;
+}
+
+/* DS4 elevation, inline so a utility reads the semantic.css value where it
+   is used (a data-theme="light" panel gets the light float and modal). */
+@theme inline {
+  --shadow-float: var(--sl-shadow-float);
+  --shadow-modal: var(--sl-shadow-modal);
+  --shadow-halo: var(--sl-shadow-halo);
+  --shadow-lip: var(--sl-shadow-lip);
+  --shadow-lip-lg: var(--sl-shadow-lip-lg);
+  /* Grounds: the flat, unblurred 4px band under a card that contrasts with
+     what is behind it (same language as the keycap lip). */
+  --shadow-drop: 0 4px 0 0 hsl(var(--ground-drop));
+}
+
+/* ==========================================================================
+   DS4 type utilities. The display steps are Bricolage Grotesque at 800,
+   a little tight (-0.03em big, -0.02em at 24 and 20; font-synthesis is off
+   so a stray weight class never fakes a bold); the
+   hand steps are Caveat. Size, line height (120%) and weight follow DS4.
+   A leading-* or font-* class next to one still wins, like Tailwind's own
+   text-* sizes. On a breakpoint that switches to a sans size
+   (md:text-base), add md:font-sans too.
+   ========================================================================== */
+@utility text-display-60 {
+  font-family: var(--font-display);
+  font-size: 3.75rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 800);
+  letter-spacing: var(--tw-tracking, -0.03em);
+  font-synthesis-weight: none;
+}
+@utility text-display-48 {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 800);
+  letter-spacing: var(--tw-tracking, -0.03em);
+  font-synthesis-weight: none;
+}
+@utility text-display-36 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 800);
+  letter-spacing: var(--tw-tracking, -0.03em);
+  font-synthesis-weight: none;
+}
+@utility text-display-24 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 800);
+  letter-spacing: var(--tw-tracking, -0.02em);
+  font-synthesis-weight: none;
+}
+@utility text-display-20 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 800);
+  letter-spacing: var(--tw-tracking, -0.02em);
+  font-synthesis-weight: none;
+}
+@utility text-hand-48 {
+  font-family: var(--font-hand);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 700);
+}
+@utility text-hand-36 {
+  font-family: var(--font-hand);
+  font-size: 2.25rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 700);
+}
+@utility text-hand-24 {
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 700);
+}
+@utility text-hand-20 {
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 600);
+}
+@utility text-hand-16 {
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.2);
+  font-weight: var(--tw-font-weight, 600);
+}
+/* Code (--sl-text-code): 14 · 400 · 24px line · monospace. Anything copyable. */
+/* A screenplay's text: Courier Prime 16/28 (scripts only, never interface). */
+@utility text-script {
+  font-family: var(--sl-font-script);
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.75rem);
+  font-weight: var(--tw-font-weight, 400);
+}
+@utility text-code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.5rem);
+  font-weight: var(--tw-font-weight, 400);
+}
+/* Big SF Pro (the body face) on the type scale, for numbers that should
+   read as product, not brand (the coupon countdown): tabular and a touch
+   tight. */
+@utility text-sans-36 {
+  font-family: var(--font-sans);
+  font-size: 2.25rem;
+  line-height: var(--tw-leading, 1.1);
+  font-weight: var(--tw-font-weight, 500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+/* SF Pro a step down: a section's line in the body face (a Spaces category
+   page's headline under its shelf), semibold, a touch tight. */
+@utility text-sans-28 {
+  font-family: var(--font-sans);
+  font-size: 1.75rem;
+  line-height: var(--tw-leading, 1.15);
+  font-weight: var(--tw-font-weight, 600);
+  letter-spacing: -0.01em;
+}
+/* Big sans titles, product voice instead of Bricolage's brand voice (homepage
+   B, Nov 15 2026: "minimise the big bulky font"): a hero line and section
+   titles in the body sans, medium, a touch tight, on the scale (48, 24; 36 is text-sans-36). */
+@utility text-sans-48 {
+  font-family: var(--font-sans);
+  font-size: 3rem;
+  line-height: var(--tw-leading, 1.05);
+  font-weight: var(--tw-font-weight, 500);
+  letter-spacing: -0.03em;
+}
+@utility text-sans-24 {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  line-height: var(--tw-leading, 1.15);
+  font-weight: var(--tw-font-weight, 500);
+  letter-spacing: -0.02em;
+}
+/* The DS4 "strong", "num" and "caps" text styles (button labels, prices,
+   eyebrows). */
+@utility text-caption-strong {
+  font-size: 0.75rem;
+  line-height: var(--tw-leading, 1.4);
+  font-weight: var(--tw-font-weight, 600);
+}
+@utility text-caption-caps {
+  font-size: 0.75rem;
+  line-height: var(--tw-leading, 1.4);
+  font-weight: var(--tw-font-weight, 600);
+  letter-spacing: var(--sl-text-caption-caps-tracking);
+  text-transform: uppercase;
+}
+@utility text-sm-strong {
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.4);
+  font-weight: var(--tw-font-weight, 600);
+}
+@utility text-sm-num {
+  font-size: 0.875rem;
+  line-height: var(--tw-leading, 1.4);
+  font-weight: var(--tw-font-weight, 700);
+  font-variant-numeric: tabular-nums;
+}
+@utility text-base-strong {
+  font-size: 1rem;
+  line-height: var(--tw-leading, 1.4);
+  font-weight: var(--tw-font-weight, 600);
+}
+
+/* The DS4 keycap's motion (components/ui/button-variants.ts): the press
+   (face drops by its lip) on the instant 80ms lip curve, colour on the
+   fast 120ms. */
+@utility keycap-motion {
+  transition-property: transform, translate, box-shadow, background-color, color;
+  transition-duration:
+    var(--motion-duration-instant), var(--motion-duration-instant),
+    var(--motion-duration-instant), var(--motion-duration-fast),
+    var(--motion-duration-fast);
+  transition-timing-function: var(--motion-ease-lip);
+}
+
+/* The slab keycap (Oct 2026, "Rounded slab"; lip inside since Oct 6): a
+   rounded face with a solid lip along its bottom edge, drawn INSIDE the
+   button (an inset shadow), so every button keeps its exact height and
+   lines up with its neighbours. The label sits centred on the face above
+   the lip (padding-bottom = the lip). Hover: the lip thickens by
+   --slab-grow and the label rises 2px, plus the hover colour and a glint.
+   Press (and loading): the lip goes and the label drops back to the
+   centre. Disabled: no lip, label centred.
+   Ghost and icon buttons have no lip (--slab-d: 0, --slab-grow: 0): only
+   their label rises on hover and drops back on press.
+   Set per style: --slab-lip, --slab-hover, --slab-shine, and for outlined
+   styles --slab-edge (a 1px inside edge). Per size: --slab-d (lip depth).
+   data-glint="idle" repeats the glint every 4s. Reduced motion: colour
+   only, no rise, no glint. */
+/* The glint's two slanted bars, under the host's content and clipped to it
+   (the host must be positioned). Shared by the keycap (keycap-slab, which
+   sweeps them on hover and every 4s) and a yellow ticket (glint-idle).
+   Sized by --glint-w / --glint-w2 / --glint-gap; drawn in --glint-shine, or
+   the keycap's --slab-shine. */
+@utility glint-bars {
+  isolation: isolate;
+  overflow: hidden;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -20%;
+    bottom: -20%;
+    left: calc(-10% - 60px);
+    background: var(--glint-shine, var(--slab-shine, transparent));
+    transform: skewX(-18deg);
+    pointer-events: none;
+  }
+  &::before {
+    width: var(--glint-w, 18px);
+  }
+  &::after {
+    width: var(--glint-w2, 6px);
+    margin-left: var(--glint-gap, 26px);
+  }
+}
+
+@utility keycap-slab {
+  @apply glint-bars;
+  /* Its own bars, never a host's (a keycap on a glinting ticket). */
+  --glint-shine: var(--slab-shine, transparent);
+  --glint-w: 18px;
+  --glint-w2: 6px;
+  --glint-gap: 26px;
+  position: relative;
+  padding-bottom: var(--slab-d, 3px);
+  box-shadow:
+    inset 0 calc(-1 * var(--slab-d, 3px)) 0 0 var(--slab-lip, transparent),
+    inset 0 0 0 var(--slab-edge-w, 0px) var(--slab-edge, transparent);
+  transition-property: padding-bottom, box-shadow, background-color, color;
+  transition-duration: 200ms, 200ms, var(--motion-duration-fast), var(--motion-duration-fast);
+  transition-timing-function: var(--motion-ease-hop), var(--motion-ease-hop), ease, ease;
+
+  &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]) {
+    background-color: var(--slab-hover, transparent);
+    padding-bottom: calc(var(--slab-d, 3px) + 4px);
+    box-shadow:
+      inset 0 calc(-1 * (var(--slab-d, 3px) + var(--slab-grow, 2px))) 0 0 var(--slab-lip, transparent),
+      inset 0 0 0 var(--slab-edge-w, 0px) var(--slab-edge, transparent);
+  }
+  &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::before,
+  &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::after {
+    animation: keycap-glint 620ms cubic-bezier(0.45, 0, 0.2, 1);
+  }
+  &[data-glint="idle"]:not(:hover, :disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::before,
+  &[data-glint="idle"]:not(:hover, :disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::after {
+    animation: keycap-glint-idle 4000ms cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+  &[data-done]::before,
+  &[data-done]::after {
+    animation: keycap-glint 900ms cubic-bezier(0.45, 0, 0.2, 1) 1;
+  }
+
+  &:active:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]),
+  &:is([data-loading], [aria-busy="true"]) {
+    padding-bottom: 0;
+    box-shadow: inset 0 0 0 var(--slab-edge-w, 0px) var(--slab-edge, transparent);
+    transition-duration: 80ms;
+    transition-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  &:is([data-loading], [aria-busy="true"]) {
+    cursor: progress;
+  }
+  &:is(:disabled, [aria-disabled="true"]):not([data-loading], [aria-busy="true"]) {
+    padding-bottom: 0;
+    box-shadow: inset 0 0 0 var(--slab-edge-w, 0px) var(--slab-edge, transparent);
+  }
+  &:is(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::before,
+  &:is(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"])::after {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-property: background-color, color;
+    &::before,
+    &::after {
+      animation: none !important;
+    }
+    &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]) {
+      padding-bottom: var(--slab-d, 3px);
+      box-shadow:
+        inset 0 calc(-1 * var(--slab-d, 3px)) 0 0 var(--slab-lip, transparent),
+        inset 0 0 0 var(--slab-edge-w, 0px) var(--slab-edge, transparent);
+    }
+  }
+}
+
+/* The primary keycap's idle glint on a surface that isn't a button: a
+   yellow ticket waiting for its Claim or Upgrade (OfferCard). The same bars
+   (glint-bars) and the same 4s sweep, a little wider for the bigger face.
+   None under reduced motion. */
+@utility glint-idle {
+  @apply glint-bars;
+  --glint-shine: var(--keycap-shine);
+  --glint-w: 28px;
+  --glint-w2: 10px;
+  --glint-gap: 40px;
+  &::before,
+  &::after {
+    animation: keycap-glint-idle 4000ms cubic-bezier(0.45, 0, 0.2, 1) infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+}
+
+/* Ghost buttons (no face, no lip): only the label rises 2px on hover and
+   drops back on press. Call sites keep their own hover colours. */
+@utility keycap-lift {
+  padding-bottom: 0;
+  transition-property: padding-bottom, background-color, color;
+  transition-duration: 200ms, var(--motion-duration-fast), var(--motion-duration-fast);
+  transition-timing-function: var(--motion-ease-hop), ease, ease;
+  &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]) {
+    padding-bottom: 4px;
+  }
+  &:active:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]) {
+    padding-bottom: 0;
+    transition-duration: 80ms, var(--motion-duration-fast), var(--motion-duration-fast);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:hover:not(:disabled, [aria-disabled="true"], [data-loading], [aria-busy="true"]) {
+      padding-bottom: 0;
+    }
+  }
+}
+
+@keyframes keycap-glint {
+  0% {
+    left: calc(-10% - 60px);
+  }
+  100% {
+    left: 110%;
+  }
+}
+@keyframes keycap-glint-idle {
+  0% {
+    left: calc(-10% - 60px);
+  }
+  26% {
+    left: 110%;
+  }
+  100% {
+    left: 110%;
+  }
+}
+
+/* Done: the rays that burst out of a keycap's edges (components/ui/button.tsx
+   KeycapBurst), yellow and the ink line alternating. */
+@keyframes keycap-ray {
+  0% {
+    transform: translateX(var(--ray-a)) scaleX(0.2);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(var(--ray-b)) scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Keyframes (top level)
+   ========================================================================== */
+/* Enterprise Recap hero: two rows of the client's assets drifting in opposite
+   directions. Each row renders its images twice, so a -50% travel loops with
+   no visible seam. */
+/* Creative Studio pending-generation beam (@repo/studio generation-card).
+   Lives here, not in a host app's globals.css: the package ships no CSS, so
+   every host that renders it must get the keyframe from the one @repo/ui
+   stylesheet it already imports. */
+/* Full-height minus the host's top chrome. The host sets the nav height
+   (--nav-h, 4rem unset) and the banner vars (0 when it has none), so packages
+   can size to the viewport without knowing what sits above them. */
+@utility h-screen-minus-nav {
+  height: calc(
+    100vh - var(--nav-h, 4rem) - var(--trigger-banner-h, 0px) -
+      var(--top-banner-h, 0px)
+  );
+  /* The visible viewport: 100vh on phones includes the space behind the URL
+     bar, which pushed bottom chrome off screen. */
+  height: calc(
+    100dvh - var(--nav-h, 4rem) - var(--trigger-banner-h, 0px) -
+      var(--top-banner-h, 0px)
+  );
+}
+/* A hero that stops short of the fold by 14rem, so what follows (a section
+   title and the top of its first row) shows in the first view. */
+@utility min-h-screen-peek {
+  min-height: calc(
+    100dvh - var(--nav-h, 4rem) - var(--trigger-banner-h, 0px) -
+      var(--top-banner-h, 0px) - 14rem
+  );
+}
+@utility min-h-screen-minus-nav {
+  min-height: calc(
+    100vh - var(--nav-h, 4rem) - var(--trigger-banner-h, 0px) -
+      var(--top-banner-h, 0px)
+  );
+  /* The visible viewport: 100vh on phones includes the space behind the URL
+     bar, which pushed bottom chrome off screen. */
+  min-height: calc(
+    100dvh - var(--nav-h, 4rem) - var(--trigger-banner-h, 0px) -
+      var(--top-banner-h, 0px)
+  );
+}
+
+@keyframes space-card-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes critter-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-6%) rotate(-4deg);
+  }
+  65% {
+    transform: translateY(-3%) rotate(3deg);
+  }
+}
+
+@keyframes cs-beam-sweep {
+  from {
+    transform: translate(-100%, -100%);
+  }
+  to {
+    transform: translate(100%, 100%);
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes recap-drift-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes recap-drift-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes slide-in-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes slide-out-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes text-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+/* SheenLoader — driven by CSS (not Framer Motion) so the animation always runs
+   on mount, even inside an <AnimatePresence initial={false}> subtree (the media
+   carousel), which otherwise suppresses nested motion animations on first open. */
+@keyframes sheen-glide {
+  0% {
+    transform: translateX(-70%);
+  }
+  55%,
+  100% {
+    transform: translateX(70%);
+  }
+}
+@keyframes sheen-tick {
+  0%,
+  6% {
+    transform: rotate(0deg);
+  }
+  18% {
+    transform: rotate(-16deg);
+  }
+  30% {
+    transform: rotate(7deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+/* A loader stays invisible for its first 100ms, so media that is already
+   cached or loads fast never flashes one. */
+@keyframes loader-grace {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.loader-grace {
+  animation: loader-grace 100ms step-end both;
+}
+/* A soft band of light that crosses a surface now and then: the Creator
+   Pass card, the nav's pass graphic, the announcement bar. Put it on a
+   positioned, clipped element. Tune with --shine-color, --shine-duration,
+   --shine-delay and --shine-count. Composited (transform only). */
+.shine-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    var(--shine-color, var(--keycap-shine-soft)) 50%,
+    transparent 62%
+  );
+  transform: translateX(-100%);
+  animation: shine-sweep var(--shine-duration, 5.5s) var(--motion-ease-in-out)
+    var(--shine-delay, 1.2s) var(--shine-count, infinite);
+}
+@keyframes shine-sweep {
+  35%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shine-sweep::after {
+    display: none;
+  }
+}
+/* Loading cards (Skeleton shimmer, ShimmerReveal): the --skeleton face (a
+   step off --muted, so a loading card never blends into a muted control
+   over it, such as the docked composer's fold) with one soft band of light
+   (--skeleton-shine) crossing it. The band is fixed to the viewport, so
+   every card on screen shows the same band at the same moment, one sweep
+   across the whole grid (after Skullet). iOS Safari ignores `fixed`: there
+   each card sweeps on its own. A gradient by design decision (Nov 2026,
+   DESIGN_SYSTEM.md "No gradients"). Reduced motion: the flat face only. */
+.skeleton-shimmer {
+  background-color: hsl(var(--skeleton));
+  background-image: linear-gradient(
+    105deg,
+    transparent 36%,
+    var(--skeleton-shine) 50%,
+    transparent 64%
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 250vw 100vh;
+  background-position: 100% 0;
+  animation: skeleton-sweep 1.8s var(--motion-ease-in-out) infinite;
+}
+@keyframes skeleton-sweep {
+  0% {
+    background-position: 100% 0;
+  }
+  80%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    background-image: none;
+    animation: none;
+  }
+}
+.sheen-band {
+  will-change: transform;
+  animation: sheen-glide 3.8s cubic-bezier(0.5, 0, 0.15, 1) infinite;
+}
+.sheen-band--trail {
+  animation-duration: 4.6s;
+  animation-delay: 0.5s;
+}
+.sheen-tick {
+  animation: sheen-tick 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheen-band {
+    display: none;
+  }
+  .sheen-tick {
+    animation: none;
+  }
+}
+@keyframes scan-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes spin-gradient {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+/* ==========================================================================
+   container + backgroundImage @utility blocks (from config container + backgroundImage)
+   ========================================================================== */
+/* container: replicate v3 behavior FAITHFULLY — center + 2rem padding + the
+   default responsive max-widths, with 2xl overridden to 1400px. */
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (min-width: 640px) {
+    max-width: 640px;
+  }
+  @media (min-width: 768px) {
+    max-width: 768px;
+  }
+  @media (min-width: 1024px) {
+    max-width: 1024px;
+  }
+  @media (min-width: 1280px) {
+    max-width: 1280px;
+  }
+  @media (min-width: 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/* ==========================================================================
+   Border-compat freeze (M1: exactly ONE copy kept).
+   The default border color changed to `currentcolor` in Tailwind v4; these
+   compatibility styles keep everything looking like v3.
+   ========================================================================== */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* ==========================================================================
+   @utility blocks moved verbatim from globals.css
+   ========================================================================== */
+@utility mask-fade-x {
+  /* Horizontal fade (left ↔ right) */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+}
+
+@utility mask-fade-y {
+  /* Vertical fade (top ↕ bottom) */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+}
+
+@utility mask-fade-inset {
+  /* Inset fade (all sides) */
+  mask-image:
+    linear-gradient(
+      to top,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to top,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+  -webkit-mask-composite: destination-in;
+}
+
+@utility no-scrollbar {
+  /* Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@utility bg-grid {
+  /* Subtle grid background with fade-to-transparent towards bottom */
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* Grid lines use the theme foreground color at low alpha so base background remains unchanged */
+  background-image:
+    linear-gradient(
+      to right,
+      hsl(var(--foreground) / 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      hsl(var(--foreground) / 0.06) 1px,
+      transparent 1px
+    );
+  background-size: 96px 96px;
+}
+
+@utility bg-grid-fade {
+  /* Start fading even earlier (from ~20% of the viewport height) */
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 0.5) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 0.5) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+@layer base {
+  /* Browser autofill keeps the field's own ground (no white flash on dark,
+     no blue wash on light) */
+  :root input:-webkit-autofill,
+  :root textarea:-webkit-autofill,
+  :root select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground));
+  }
+
+  /* Thin scrollbars in both themes, the thumb from --scrollbar-thumb
+     (semantic.css): no white track on dark, no heavy grey one on light. */
+  :root {
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+  :root ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  :root ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  :root ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
+
+  :root ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+
+/* A column that scrolls on its own and must not cut hard ("anything that cuts
+   blurs"): a soft fade at its foot always, and one at its top that appears
+   only once it is scrolled (so at rest its first line sits flush with the top
+   edge, unfaded). The top fade grows over the first 1rem of scroll
+   (a scroll-driven animation); browsers without them keep the foot fade. */
+@property --scroll-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes scroll-fade-top {
+  to {
+    --scroll-fade-top: 1.5rem;
+  }
+}
+@utility scroll-fade-y {
+  mask-image: linear-gradient(to bottom, transparent, black var(--scroll-fade-top), black calc(100% - 3rem), transparent);
+  @supports (animation-timeline: scroll()) {
+    animation: scroll-fade-top linear both;
+    animation-timeline: scroll(self);
+    animation-range: 0 1.5rem;
+  }
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom scrollbar styles */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+@utility custom-scrollbar {
+  /* Custom scrollbar for when we want to show it */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+@utility color-swatches-scrollbar {
+  /* Thin non-expanding scrollbar for color swatches */
+  scrollbar-width: thin;
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 2px;
+  }
+}
+
+/* ==========================================================================
+   @layer base rules moved verbatim from globals.css
+   ========================================================================== */
+/* --radius lives in tokens/semantic.css. */
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: sans-serif;
+  }
+
+  iframe {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
+
+@keyframes shine {
+  0%,
+  10% {
+    background-position:
+      0 0,
+      -500px 0;
+  }
+  20% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  90% {
+    background-position:
+      0 0,
+      500px 0;
+  }
+  100% {
+    background-position:
+      0 0,
+      500px 0;
+  }
+}
+
+@-webkit-keyframes shine {
+  0%,
+  10% {
+    background-position:
+      0 0,
+      -500px 0;
+  }
+  20% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  90% {
+    background-position:
+      0 0,
+      500px 0;
+  }
+  100% {
+    background-position:
+      0 0,
+      500px 0;
+  }
+}
+
+/* Tilt (components/ui/tilt.tsx): the card leans toward the pointer
+   (--tilt-x/y, set on move) and a soft light follows it (--glare-x/y),
+   on hover devices only; reduced motion keeps it flat. */
+.tilt {
+  perspective: 900px;
+}
+.tilt-face {
+  position: relative;
+  height: 100%;
+  border-radius: inherit;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform var(--motion-duration-fast) ease-out;
+}
+.tilt:hover .tilt-face {
+  will-change: transform;
+}
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 30%), hsl(var(--on-media) / 0.55), transparent 55%);
+  transition: opacity var(--motion-duration-fast) ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tilt:hover .tilt-glare {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt-face {
+    transform: none;
+  }
+  .tilt-glare {
+    display: none;
+  }
+}
+
+/* A timer bar (the clone dialog's tip dots): fills left to right over
+   --fill-duration, paused while [data-paused] is on an ancestor. Its end
+   (animationend) is what moves on; reduced motion shows it full and still. */
+@keyframes bar-fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+@utility animate-bar-fill {
+  transform-origin: left;
+  animation: bar-fill var(--fill-duration, 4s) linear both;
+  [data-paused] & {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes circular-progress-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.circular-progress-animated {
+  animation-name: circular-progress-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* Agent Orb Animation */
+@keyframes orb-gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.orb-animated {
+  animation: orb-gradient-flow 2s ease infinite;
+}
+
+/* Sandbox terminal cursor blink */
+@keyframes terminal-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  background-color: hsl(var(--info-foreground));
+  animation: terminal-cursor-blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+/* Accessibility: honor the OS "reduce motion" preference app-wide. CSS
+   transitions (e.g. the sidebar collapse slide, hover/opacity fades) are
+   compositor-driven and otherwise ignore the setting; framer-motion elements
+   are handled separately via useReducedMotion. The 0.01ms values (not 0) keep
+   transitionend/animationend listeners firing. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   v3-compat freeze — placeholder color, button cursor, ring defaults.
+   Border-color freeze is already above (added by the upgrade tool).
+   Removing any of these to adopt v4 defaults is a separate, later PR.
+   ========================================================================== */
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@theme {
+  --default-ring-width: 3px;
+  --default-ring-color: var(--color-blue-500);
+}
+
+/* ==========================================================================
+   Popup motion: the one enter/exit every dropdown, popover and select popup
+   shares. Driven by Base UI's data-starting-style / data-ending-style, so the
+   exit runs before unmount. Opacity, scale and translate only (compositor).
+   The timings (--motion-*) are tokens in tokens/semantic.css, on :root so
+   a popup's positioner and contents can share them.
+   ========================================================================== */
+
+@utility popup-motion {
+  --popup-scale: 0.96;
+  --popup-dx: 0px;
+  --popup-dy: 0px;
+  transform-origin: var(--transform-origin);
+  transition-property: opacity, scale, translate;
+  transition-duration: var(--motion-duration-enter);
+  transition-timing-function: var(--motion-ease-out);
+
+  /* Start a few px toward the trigger. */
+  &:where([data-side="bottom"]) {
+    --popup-dy: -4px;
+  }
+  &:where([data-side="top"]) {
+    --popup-dy: 4px;
+  }
+  &:where([data-side="left"], [data-side="inline-start"]) {
+    --popup-dx: 4px;
+  }
+  &:where([data-side="right"], [data-side="inline-end"]) {
+    --popup-dx: -4px;
+  }
+  &:where([data-starting-style], [data-ending-style]) {
+    opacity: 0;
+    scale: var(--popup-scale);
+    translate: var(--popup-dx) var(--popup-dy);
+  }
+  &:where([data-ending-style]) {
+    transition-duration: var(--motion-duration-exit);
+    transition-timing-function: var(--motion-ease-in);
+  }
+  /* Fade only. !important (in the utilities layer) outranks the app-wide
+     reduced-motion rule above, which would otherwise make popups snap. */
+  @media (prefers-reduced-motion: reduce) {
+    --popup-scale: 1;
+    --popup-dx: 0px;
+    --popup-dy: 0px;
+    transition-property: opacity;
+    transition-duration: var(--motion-duration-enter) !important;
+    &:where([data-ending-style]) {
+      transition-duration: var(--motion-duration-exit) !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Sloosh app additions (production: apps/sloosh/app/globals.css)
+   ========================================================================== */
+
+/* The 404's critters pop into their spots (not-found-art.tsx). */
+@theme {
+  --animate-critter-pop: critter-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes critter-pop {
+  from {
+    transform: translateY(40%) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Explore's parallax (explore-motion.tsx): a transform tied to the element's
+   pass through <main>, run by the browser with the scroll. Off under reduced
+   motion and where view timelines are missing: the art stays in place. */
+@keyframes explore-parallax {
+  from {
+    transform: var(--parallax-from);
+  }
+  to {
+    transform: var(--parallax-to);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-parallax],
+    [data-peek-up] {
+      animation: explore-parallax linear both;
+      animation-timeline: view();
+    }
+    /* Done once the bird is fully in view. */
+    [data-peek-up] {
+      animation-range: entry;
+    }
+  }
+}
+
+/* Welcome-credits card: the countdown ring around the close button depletes
+   over its auto-close window, cueing that it is about to close. Driven by CSS
+   (not a frame loop) so hovering can pause it and animationend can close it. */
+@keyframes credits-ring-deplete {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: var(--credits-ring-c);
+  }
+}
+
+/* The phone Studio's loading card (mobile prototype `.card.loading`): a
+   100deg sweep, right to left, 1.4s. Stopped by the reduced-motion rule. */
+@keyframes phone-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* The phone Assets loader's pupils look left and back (the mobile
+   prototype's 2.4s look). */
+@keyframes phone-look {
+  0%,
+  60%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-5px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .phone-look {
+    animation: phone-look 2.4s ease-in-out infinite;
+  }
+}
+
+/* Phones run the Sloosh mobile prototype, where every popover is a bottom
+   sheet. The shared menu, select and popover popups carry `phone-sheet`
+   (components/ui); below md their positioner is pinned to the bottom edge
+   and the popup takes the prototype's sheet: full width, 24px top corners (--radius-sheet),
+   the first layer, a 38x5 handle, a 60% scrim (its shadow, so a tap on it is
+   a tap outside, which closes it) and the 320ms rise on the motion curve.
+   Sheets with drag-to-dismiss use BottomSheet; these close on a tap outside,
+   Escape or a pick. Production scopes these to [data-brand="sloosh"]; here
+   every page is Sloosh, so the prefix is gone. Unlayered on purpose: it must
+   beat the popups' own utility classes. */
+@media (max-width: 767.98px) {
+  div:has(> .phone-sheet) {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+  .phone-sheet {
+    position: relative;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    max-height: 88dvh !important;
+    overflow-y: auto;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0 !important;
+    background: var(--layer-1) !important;
+    box-shadow: 0 0 0 100vmax var(--layer-scrim) !important;
+    border-top: 1px solid var(--layer-line-strong);
+    padding: 20px 16px calc(12px + env(safe-area-inset-bottom)) !important;
+    --popup-dx: 0px;
+    --popup-dy: 100%;
+    --popup-scale: 1;
+    transition-duration: var(--motion-duration-sheet) !important;
+    transition-timing-function: var(--motion-ease-out) !important;
+  }
+  .phone-sheet::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 38px;
+    height: 5px;
+    margin-left: -19px;
+    border-radius: 3px;
+    background: var(--layer-4);
+  }
+  .phone-sheet
+    :is(
+      [role="menuitem"],
+      [role="menuitemradio"],
+      [role="menuitemcheckbox"],
+      [role="option"]
+    ) {
+    min-height: 44px;
+  }
+}
+
+/* /design-system only: the dot that runs along each easing curve. */
+@keyframes ds-ease-run {
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(100% - 0.75rem);
+  }
+}
+.ds-ease-dot {
+  animation: ds-ease-run 1.6s infinite alternate;
+}
+
+/* ==========================================================================
+   Entrances (DESIGN_SYSTEM.md, "Motion: entrances"). Each surface arrives
+   once, from the edge it lives on: the top nav and a page's tabs drop in,
+   a docked composer rises from the bottom, side panels slide in from their
+   side. One curve and one timing for all of them and for the card rise
+   (--motion-ease-arrive, 300ms move, 200ms fade), 12-16px only: snappy,
+   no overshoot, the same every time.
+   `--enter-delay` staggers parts that arrive together. Under reduced
+   motion the app-wide rule above makes them instant.
+   Cards rise on their own as they scroll in: [data-rise], RiseObserver.
+   ========================================================================== */
+
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes enter-down {
+  from {
+    transform: translateY(-12px);
+  }
+}
+@keyframes enter-up {
+  from {
+    transform: translateY(16px);
+  }
+}
+@keyframes enter-right {
+  from {
+    transform: translateX(-16px);
+  }
+}
+@keyframes enter-left {
+  from {
+    transform: translateX(16px);
+  }
+}
+
+@utility animate-enter-down {
+  animation:
+    enter-fade var(--motion-duration-arrive-fade) var(--motion-ease-arrive) both,
+    enter-down var(--motion-duration-arrive) var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+@utility animate-enter-up {
+  animation:
+    enter-fade var(--motion-duration-arrive-fade) var(--motion-ease-arrive) both,
+    enter-up var(--motion-duration-arrive) var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+/* From the left edge, moving right (a left panel). */
+@utility animate-enter-right {
+  animation:
+    enter-fade var(--motion-duration-arrive-fade) var(--motion-ease-arrive) both,
+    enter-right var(--motion-duration-arrive) var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+/* From the right edge, moving left (a right panel). */
+@utility animate-enter-left {
+  animation:
+    enter-fade var(--motion-duration-arrive-fade) var(--motion-ease-arrive) both,
+    enter-left var(--motion-duration-arrive) var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+/* A hero's pieces dropping into place as the page opens (a Spaces category
+   page's shelf: the sleeves land on the ledge). Marketing scale, as
+   data-rise="lg": 32px over 480ms, the fade 280ms; it is the page's hero,
+   seen once per visit. */
+@keyframes enter-drop {
+  from {
+    transform: translateY(-32px);
+  }
+}
+@utility animate-enter-drop {
+  animation:
+    enter-fade 280ms var(--motion-ease-arrive) both,
+    enter-drop 480ms var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+/* A fade only, in the same order (a shadow arriving with what casts it). */
+@utility animate-enter-fade {
+  animation: enter-fade var(--motion-duration-arrive-fade) var(--motion-ease-arrive) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+/* Cards: hidden until RiseObserver raises them (its rise ends held at
+   full opacity), wherever <html> carries data-rise-ready (app/layout).
+   Without JS the <noscript> rule in app/layout shows them. No timed
+   failsafe: one that unhid cards after a few seconds made any card still
+   waiting at the screen's edge show, then rise again (the double FAQ). */
+:root[data-rise-ready] [data-rise] {
+  opacity: 0;
+}
+
+
+/* Card text fade (components/ui/card-fade.tsx): the scrim darkens while
+   its card is hovered or focused, so the text reads over a busy frame. */
+[data-slot="card-fade"] [data-slot="gradual-blur-tint"] {
+  transition: opacity var(--motion-duration-enter) var(--motion-ease-out);
+}
+:is(.group\/card, .group\/tile, .group):is(:hover, :has(:focus-visible)) [data-slot="card-fade"],
+[data-card-state="hover"] [data-slot="card-fade"] {
+  --card-fade-tint: var(--card-fade-tint-hover);
+}
+
+/* Space form tiles (components/ui/form-tile.tsx). Generate jumping to a
+   field that needs fixing pulses its red edge twice (an overlay remounted
+   per jump); a pick past a cap shakes the card. Both answer a click and
+   play once. Reduced motion: the pulse is a colour, so it stays; the shake
+   doesn't move. */
+@theme {
+  --animate-tile-flash: tile-flash 900ms var(--motion-ease-arrive);
+  --animate-tile-shake: tile-shake 360ms ease-in-out;
+  --animate-drama-pop: drama-pop var(--motion-duration-pop) var(--motion-ease-hop) both;
+}
+@keyframes tile-flash {
+  30%,
+  60% {
+    box-shadow: inset 0 0 0 2px hsl(var(--destructive));
+  }
+}
+@keyframes tile-shake {
+  20%,
+  60% {
+    transform: translateX(-3px);
+  }
+  40%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-tile-shake {
+    animation: none;
+  }
+}
+@keyframes drama-pop {
+  0% {
+    transform: scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-drama-pop {
+    animation: none;
+  }
+}
+
+/* Microdrama: a placeholder reads fainter than its field's label, so the
+   eye lands on the label (the label is muted-foreground; this is a step
+   down). Scoped to the section's pages and dialogs (.faint-placeholders)
+   until the rest of the app follows. */
+.faint-placeholders ::placeholder {
+  color: var(--color-disabled-foreground) !important;
+  opacity: 1;
+}
+
+/* ===== Pricing cards ====================================================
+   Faces: a top-to-bottom gradient in the card's own colour
+   (--ground-face-top into --ground-face-bottom): grey on the dark card,
+   lighter yellow into the yellow on Pro, white into light grey on white.
+   --sl-glow is how much of the top colour the face starts with; hover
+   (or focus inside) raises it. Used by the plan cards, the Enterprise card
+   and the top-ups (components/pricing). */
+.sl-ground-face {
+  --sl-glow: 55%;
+  background: linear-gradient(180deg,
+    color-mix(in oklab, hsl(var(--ground-face-top)) var(--sl-glow), hsl(var(--ground-face-bottom))) 0%,
+    hsl(var(--ground-face-bottom)) 75%);
+  transition: --sl-glow 200ms ease-out;
+}
+[data-theme="light"] .sl-ground-face,
+.sl-ground-face[data-theme="light"],
+[data-ground="yellow"] .sl-ground-face,
+.sl-ground-face[data-ground="yellow"] { --sl-glow: 100%; }
+.group\/plan:hover .sl-ground-face,
+.group\/plan:focus-within .sl-ground-face { --sl-glow: 85%; }
+.group\/plan:hover [data-theme="light"] .sl-ground-face,
+.group\/plan:hover .sl-ground-face[data-theme="light"],
+.group\/plan:hover [data-ground="yellow"] .sl-ground-face,
+.group\/plan:hover .sl-ground-face[data-ground="yellow"] { --sl-glow: 100%; }
+@property --sl-glow {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 55%;
+}
+
+/* The "% off" price tag (OffTag, components/pricing/parts.tsx) swings
+   from where its string meets the card's top edge. */
+.sl-off-tag { transform-origin: 30.3% 0; }
+
+@keyframes sl-off-sway {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-5deg); }
+  60% { transform: rotate(3deg); }
+  80% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+.group\/plan:hover .sl-off-tag {
+  animation: sl-off-sway 900ms var(--motion-ease-out, ease-out);
+}
+/* A tag whose number just changed (or that just appeared) drops in on its
+   string and swings (OffTag bump, the top-up card). */
+@keyframes sl-off-pop {
+  0% { transform: rotate(-12deg) translateY(-8px); opacity: 0; }
+  30% { transform: rotate(7deg) translateY(0); opacity: 1; }
+  55% { transform: rotate(-4deg); }
+  78% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+.sl-off-tag-bump {
+  animation: sl-off-pop 700ms var(--motion-ease-out, ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .group\/plan:hover .sl-off-tag { animation: none; }
+  .sl-off-tag-bump { animation: none; }
+  .sl-ground-face { transition: none; }
+}
+
+/* The plan card's "Recommended" tab: a folder tab grown out of the card's
+   top edge, in the card's own top colour, with concave corners where it
+   meets the edge so the two read as one piece (PlanTab, plan-cards.tsx). */
+.sl-plan-tab {
+  --sl-tab: hsl(var(--ground-face-top));
+  background: var(--sl-tab);
+}
+.sl-plan-tab::before,
+.sl-plan-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+}
+.sl-plan-tab::before {
+  left: -12px;
+  background: radial-gradient(circle at 0 0, transparent 11.5px, var(--sl-tab) 12px);
+}
+.sl-plan-tab::after {
+  right: -12px;
+  background: radial-gradient(circle at 100% 0, transparent 11.5px, var(--sl-tab) 12px);
+}
+
+/* Audio (components/ui/audio/). A playing clip's waveform fills with its
+   playhead: a clip-path reveal over the clip's length (its own
+   animation-duration, set where it plays), linear,
+   paused in place when the clip pauses, so it runs on the compositor and
+   never waits on the page. The recorder's level bars bob while it records.
+   Reduced motion: the bars hold still; the playhead still fills (it is the
+   progress, not decoration). */
+@theme {
+  --animate-audio-playhead: audio-playhead 1s linear both;
+  --animate-audio-level: audio-level 640ms ease-in-out infinite alternate;
+}
+@keyframes audio-playhead {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes audio-level {
+  from {
+    transform: scaleY(0.3);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-audio-level {
+    animation: none;
+  }
+}
+
+/* Voice blobs (components/ui/audio/voice-card.tsx): every voice's avatar
+   is a soft orb of blurred colour, after ElevenLabs' voice avatars, so a
+   long library tells voices apart at a glance. The one gradient in the
+   product besides the logo (a decision, Oct 2026), from the --blob-*
+   primitives: eight muted palettes, a voice keeps its own (picked from
+   its id). Three blurred lights over a base, then a soft highlight and a
+   darker rim so it reads as a sphere. The same in both themes. */
+.voice-blob {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: hsl(var(--blob-base));
+}
+.voice-blob::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 34% 30%, hsl(var(--blob-a)) 0, transparent 38%),
+    radial-gradient(circle at 70% 68%, hsl(var(--blob-b)) 0, transparent 42%),
+    radial-gradient(circle at 66% 26%, hsl(var(--blob-c)) 0, transparent 30%);
+  filter: blur(var(--blob-blur, 10px));
+}
+.voice-blob::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(circle at 32% 26%, hsl(0 0% 100% / 0.22) 0, transparent 34%);
+  box-shadow: inset 0 -6px 14px hsl(0 0% 0% / 0.35);
+}
+.voice-blob[data-tone="0"] { --blob-base: var(--blob-sand-base); --blob-a: var(--blob-sand-a); --blob-b: var(--blob-sand-b); --blob-c: var(--blob-sand-c); }
+.voice-blob[data-tone="1"] { --blob-base: var(--blob-mist-base); --blob-a: var(--blob-mist-a); --blob-b: var(--blob-mist-b); --blob-c: var(--blob-mist-c); }
+.voice-blob[data-tone="2"] { --blob-base: var(--blob-wine-base); --blob-a: var(--blob-wine-a); --blob-b: var(--blob-wine-b); --blob-c: var(--blob-wine-c); }
+.voice-blob[data-tone="3"] { --blob-base: var(--blob-peach-base); --blob-a: var(--blob-peach-a); --blob-b: var(--blob-peach-b); --blob-c: var(--blob-peach-c); }
+.voice-blob[data-tone="4"] { --blob-base: var(--blob-dusk-base); --blob-a: var(--blob-dusk-a); --blob-b: var(--blob-dusk-b); --blob-c: var(--blob-dusk-c); }
+.voice-blob[data-tone="5"] { --blob-base: var(--blob-olive-base); --blob-a: var(--blob-olive-a); --blob-b: var(--blob-olive-b); --blob-c: var(--blob-olive-c); }
+.voice-blob[data-tone="6"] { --blob-base: var(--blob-lilac-base); --blob-a: var(--blob-lilac-a); --blob-b: var(--blob-lilac-b); --blob-c: var(--blob-lilac-c); }
+.voice-blob[data-tone="7"] { --blob-base: var(--blob-smoke-base); --blob-a: var(--blob-smoke-a); --blob-b: var(--blob-smoke-b); --blob-c: var(--blob-smoke-c); }
+
+/* Voice auras: a take's full-screen preview (studio/audio/audio-take-preview.tsx)
+   and the orbs. The voice and take cards dropped their light (Nov 2026):
+   the orb is their only colour. The preview's light rises from the bottom
+   of its pane: three blurred waves (two of the voice's colours over a white
+   core, added with plus-lighter) and a thin bright band at the very foot;
+   it comes up on hover or focus, and breathes like speech while it plays.
+   Transform and opacity only (no filter animates). The rise is 420ms: a
+   character moment, slower than UI on purpose. Reduced motion: the colour
+   fades in place, no breathing. */
+.voice-aura-wave {
+  position: absolute;
+  inset-inline: -25%;
+  bottom: -35%;
+  pointer-events: none;
+  mix-blend-mode: plus-lighter;
+  transform: translateY(30%) scale(0.9);
+  transition:
+    transform 420ms var(--motion-ease-arrive),
+    opacity var(--motion-duration-enter) var(--motion-ease-out);
+}
+.voice-aura-wave[data-set="color"] { opacity: 0; --wave-a: var(--aura-a); --wave-b: var(--aura-b); }
+.voice-aura-wave > span {
+  display: block;
+  height: 100%;
+  border-radius: 50%;
+  transform-origin: 50% 100%;
+}
+.voice-aura-wave[data-wave="a"] { height: 95%; }
+/* Each wave fades from its middle out (closest-side) as well as blurring, so the light has no edges. */
+.voice-aura-wave[data-wave="a"] > span { background: radial-gradient(closest-side, hsl(var(--wave-a)), hsl(var(--wave-a) / 0.5) 55%, transparent); filter: blur(48px); }
+.voice-aura-wave[data-wave="b"] { height: 62%; transition-delay: 40ms; }
+.voice-aura-wave[data-wave="b"] > span { background: radial-gradient(closest-side, hsl(var(--wave-b)), hsl(var(--wave-b) / 0.45) 60%, transparent); filter: blur(36px); }
+.voice-aura-wave[data-wave="c"] { height: 30%; transition-delay: 80ms; }
+.voice-aura-wave[data-wave="c"] > span { background: radial-gradient(closest-side, hsl(0 0% 100% / 0.55), transparent); filter: blur(24px); }
+/* The glow at the very foot: a thin, bright band of the voice's second light along the bottom edge. */
+/* The edge: a soft, lighter band where the light comes in. */
+.voice-aura-wave[data-wave="d"] { height: 18%; bottom: -8%; transition-delay: 120ms; }
+.voice-aura-wave[data-wave="d"] > span { background: radial-gradient(closest-side, hsl(0 0% 100% / 0.45), hsl(var(--wave-b) / 0.7) 45%, transparent); filter: blur(18px); }
+.group:hover .voice-aura-wave,
+.group:has(:focus-visible) .voice-aura-wave,
+[data-playing] .voice-aura-wave { transform: translateY(8%); }
+.group:hover .voice-aura-wave[data-set="color"],
+.group:has(:focus-visible) .voice-aura-wave[data-set="color"] { opacity: 0.45; }
+.group:hover .voice-aura-wave[data-set="color"][data-wave="d"],
+.group:has(:focus-visible) .voice-aura-wave[data-set="color"][data-wave="d"] { opacity: 0.45; }
+[data-playing] .voice-aura-wave[data-set="color"] { opacity: 0.5; }
+[data-playing] .voice-aura-wave[data-set="color"][data-wave="d"] { opacity: 0.55; }
+[data-playing] .voice-aura-wave > span { animation: aura-speak 900ms ease-in-out infinite alternate; }
+[data-playing] .voice-aura-wave[data-wave="b"] > span { animation-duration: 640ms; animation-delay: -200ms; }
+[data-playing] .voice-aura-wave[data-wave="c"] > span { animation-duration: 480ms; animation-delay: -120ms; }
+@keyframes aura-speak {
+  from { transform: scale(1, 0.86); }
+  to { transform: scale(1.04, 1.12); }
+}
+/* A voice's picture (Nov 2026): a soft pinwheel flower on a pale tint of
+   its colour, generated in Sloosh from the user's references (one sheet of
+   twelve colourways, cut into public/mock/audio/voices/0-13, one per aura
+   tone, matched by hue; --voice-art below).
+     the audio card    the whole picture; still while the voice plays (the
+                       user's call)
+     .voice-aura-orb   everywhere a voice is round (VoiceAvatar, the
+                       composer's voice chip, voice lists, Assets, the take
+                       preview, the clone dialog): the same picture cropped
+                       to the flower, the tint a ring round it; the aura's
+                       colour sits under it while it loads */
+.voice-aura-orb {
+  position: relative;
+  background: var(--voice-art) 50% 50% / 125% no-repeat, hsl(var(--aura-a) / 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-aura-wave { transform: none !important; transition: opacity var(--motion-duration-enter) ease; }
+  [data-playing] .voice-aura-wave > span { animation: none; }
+}
+[data-aura="0"] { --voice-art: url("/mock/audio/voices/0.webp"); --aura-a: var(--aura-fire-a); --aura-b: var(--aura-fire-b); }
+[data-aura="1"] { --voice-art: url("/mock/audio/voices/1.webp"); --aura-a: var(--aura-violet-a); --aura-b: var(--aura-violet-b); }
+[data-aura="2"] { --voice-art: url("/mock/audio/voices/2.webp"); --aura-a: var(--aura-ocean-a); --aura-b: var(--aura-ocean-b); }
+[data-aura="3"] { --voice-art: url("/mock/audio/voices/3.webp"); --aura-a: var(--aura-lime-a); --aura-b: var(--aura-lime-b); }
+[data-aura="4"] { --voice-art: url("/mock/audio/voices/4.webp"); --aura-a: var(--aura-ember-a); --aura-b: var(--aura-ember-b); }
+[data-aura="5"] { --voice-art: url("/mock/audio/voices/5.webp"); --aura-a: var(--aura-rose-a); --aura-b: var(--aura-rose-b); }
+[data-aura="6"] { --voice-art: url("/mock/audio/voices/6.webp"); --aura-a: var(--aura-lagoon-a); --aura-b: var(--aura-lagoon-b); }
+[data-aura="7"] { --voice-art: url("/mock/audio/voices/7.webp"); --aura-a: var(--aura-iris-a); --aura-b: var(--aura-iris-b); }
+[data-aura="8"] { --voice-art: url("/mock/audio/voices/8.webp"); --aura-a: var(--aura-sun-a); --aura-b: var(--aura-sun-b); }
+[data-aura="9"] { --voice-art: url("/mock/audio/voices/9.webp"); --aura-a: var(--aura-honey-a); --aura-b: var(--aura-honey-b); }
+[data-aura="10"] { --voice-art: url("/mock/audio/voices/10.webp"); --aura-a: var(--aura-coral-a); --aura-b: var(--aura-coral-b); }
+[data-aura="11"] { --voice-art: url("/mock/audio/voices/11.webp"); --aura-a: var(--aura-sky-a); --aura-b: var(--aura-sky-b); }
+[data-aura="12"] { --voice-art: url("/mock/audio/voices/12.webp"); --aura-a: var(--aura-cherry-a); --aura-b: var(--aura-cherry-b); }
+[data-aura="13"] { --voice-art: url("/mock/audio/voices/13.webp"); --aura-a: var(--aura-citrus-a); --aura-b: var(--aura-citrus-b); }
+
+/* An audio card's cover in two versions (Nov 2026, generated in Sloosh):
+   sound effects' doodles each have a light one (paper ground) and a dark
+   one (charcoal ground); the card sets both
+   (--tc-light, --tc-dark) and the theme picks. */
+.themed-cover { background: var(--tc-dark) 50% 50% / cover no-repeat; }
+[data-theme="light"] .themed-cover { background-image: var(--tc-light); }
+
+/* The running border (Nov 2026): a thin silver light that goes round a
+   key, always, so it's seen without a hover. On Audio's composer, the
+   mode chip (Text to Speech, Sound Effects, Music: the one place the mode
+   is picked). Silver and quiet: a faint ring with one brighter arc, 4s a
+   turn. Reduced motion: the faint ring, still. */
+@property --sl-run {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.sl-run-border {
+  --sl-run-ring: hsl(var(--neutral-300) / 0.14);
+  --sl-run-light: hsl(var(--neutral-100) / 0.85);
+  position: relative;
+  isolation: isolate;
+}
+[data-theme="light"] .sl-run-border {
+  --sl-run-ring: hsl(var(--neutral-400) / 0.25);
+  --sl-run-light: hsl(var(--neutral-500) / 0.9);
+}
+.sl-run-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--sl-run), var(--sl-run-ring) 0 62%, var(--sl-run-light) 82%, var(--sl-run-ring) 100%);
+  mask: linear-gradient(black 0 0) content-box exclude, linear-gradient(black 0 0);
+  animation: sl-run 4s linear infinite;
+}
+@keyframes sl-run {
+  to { --sl-run: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-run-border::before { animation: none; background: var(--sl-run-ring); }
+}
+
+
+/* Dot loader (components/ui/dot-loader.tsx): the generating loader, a
+   ring of fine dots. Each dot twinkles on its own beat; the ring breathes
+   slowly. Opacity and transform only. Reduced motion: still dots. */
+.dot-loader {
+  animation: dot-loader-breathe 2400ms ease-in-out infinite alternate;
+  transform-origin: center;
+}
+.dot-loader-dot {
+  opacity: var(--dot-o, 0.5);
+  animation: dot-loader-twinkle 1600ms ease-in-out infinite alternate;
+}
+@keyframes dot-loader-breathe {
+  from { transform: scale(0.94); }
+  to { transform: scale(1.04); }
+}
+@keyframes dot-loader-twinkle {
+  from { opacity: calc(var(--dot-o, 0.5) * 0.25); }
+  to { opacity: var(--dot-o, 0.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot-loader, .dot-loader-dot { animation: none; }
+}
+
+/* Play ring (components/ui/audio/voice-card.tsx PlayRing): while a voice
+   plays, a yellow ring round its orb fills clockwise from the top over
+   the clip's length, like a timer, and holds where it is on pause. One
+   small SVG stroke (stroke-dashoffset), the single exception here to
+   transform-only motion. Reduced motion: the ring shows full, no fill. */
+@keyframes play-ring {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+.play-ring-stroke { animation: play-ring 1s linear both; }
+@media (prefers-reduced-motion: reduce) {
+  .play-ring-stroke { animation: none; stroke-dashoffset: 0; }
+}
+
+/* Voice shimmer (components/studio/audio/voice-shimmer.tsx): when a new
+   voice comes into the composer, a soft glint runs once, slowly, round the
+   edge of the composer's voice chip,
+   on its border (a 1.5px ring by a mask), and is gone; no border stays.
+   Transform only. Reduced motion: no shimmer. */
+.voice-tray-shimmer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.voice-tray-shimmer > span {
+  position: absolute;
+  inset: -200% -40%;
+  background: linear-gradient(100deg, transparent 44%, hsl(var(--foreground) / 0.9) 50%, transparent 56%);
+  animation: tray-shimmer 1200ms var(--motion-ease-out) both;
+}
+/* The composer's one-off: on the block's border, fainter, wider and slower. */
+.voice-tray-shimmer[data-edge] { inset: -1px; }
+.voice-tray-shimmer[data-edge] > span {
+  background: linear-gradient(100deg, transparent 38%, hsl(var(--foreground) / 0.45) 50%, transparent 62%);
+  animation: tray-shimmer 2600ms var(--motion-ease-in-out) both;
+}
+.voice-tray-shimmer[data-loop] > span { animation: tray-shimmer 3200ms linear infinite; }
+/* A take being made (studio/audio/audio-generation-card.tsx): the voice's
+   light drifts round the black card, its orb breathes, its waveform talks. */
+[data-pending] .voice-aura-wave[data-set="color"] { opacity: 0.7; }
+[data-pending] .voice-aura-wave > span { animation: aura-speak 2400ms ease-in-out infinite alternate; }
+.voice-aura-breathe { animation: aura-breathe 2400ms ease-in-out infinite alternate; }
+@keyframes aura-breathe {
+  from { transform: scale(0.94); }
+  to { transform: scale(1.06); }
+}
+/* Bars rise and fall like speech, a wave running through them (each bar's delay is set inline).
+   --talk-duration slows it where it should feel calm (the clone dialog's Analysing). */
+.waveform-talk > span {
+  animation: waveform-talk var(--talk-duration, 1100ms) ease-in-out infinite alternate;
+}
+@keyframes waveform-talk {
+  from { transform: scaleY(0.25); opacity: 0.5; }
+  to { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-aura-breathe, .waveform-talk > span { animation: none; }
+}
+@keyframes tray-shimmer {
+  from { transform: translateX(-60%); opacity: 1; }
+  85% { opacity: 1; }
+  to { transform: translateX(60%); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-tray-shimmer { display: none; }
+}
+
+
+/*
+ * Microdrama: from the first screen (the prompt bar) to a series, one soft hand-off instead of a cut.
+ * React's <ViewTransition> on both pages (app/(shell)/microdrama, app/(focus)/microdrama/make): the first
+ * screen leaves fast and softly blurred, the series arrives a beat later, slower, unblurring. The rest of
+ * the page (the app's navbar going, the focus bar coming) cross-fades as the root does.
+ */
+::view-transition-old(.md-leave) {
+  animation: var(--motion-duration-lg) var(--motion-ease-in) both md-vt-fade reverse;
+}
+::view-transition-new(.md-arrive) {
+  animation: var(--motion-duration-2xl) var(--motion-ease-out) var(--motion-duration-md) both md-vt-fade;
+}
+/* Only on this hand-off (its transition type), never on the app's other view transitions. */
+html:active-view-transition-type(md-handoff)::view-transition-old(root),
+html:active-view-transition-type(md-handoff)::view-transition-new(root) {
+  animation-duration: var(--motion-duration-xl);
+}
+@keyframes md-vt-fade {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.md-leave),
+  ::view-transition-new(.md-arrive),
+  html:active-view-transition-type(md-handoff)::view-transition-old(root),
+  html:active-view-transition-type(md-handoff)::view-transition-new(root) {
+    animation: none;
+  }
+}

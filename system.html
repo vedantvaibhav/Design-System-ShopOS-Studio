@@ -17,7 +17,7 @@
         All systems
       </a>
       <span class="spacer"></span>
-      <a class="mark" href="./"><i></i>ShopOS</a>
+      <a class="mark hide-xs" href="./"><i></i>ShopOS</a>
     </div>
   </header>
   <main class="wrap" id="main"></main>
@@ -62,7 +62,7 @@
           <section class="get raised">
             <div class="cmd"><code>${esc(cmd)}</code><button class="btn green raised" id="copy" type="button">Copy</button></div>
             <div class="links">
-              ${item.preview ? `<a class="btn ink raised" href="${dir}/${esc(item.preview)}">Live reference</a>` : ""}
+              ${item.preview || item.live ? `<a class="btn ink raised" href="${item.preview ? `${dir}/${esc(item.preview)}` : esc(item.live)}">Live reference</a>` : ""}
               <a class="btn raised" href="${GH}/blob/main/${dir}/SKILL.md">SKILL.md</a>
               <a class="btn raised" href="${GH}/tree/main/${dir}">Folder</a>
             </div>

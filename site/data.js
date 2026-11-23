@@ -87,7 +87,9 @@ window.DS = {
           "name": "Sloosh",
           "kicker": "Making",
           "accent": "#FFE14D",
-          "ready": false
+          "live": "https://sloosh-design-system.tech-9ce.workers.dev/design-system",
+          "ready": true,
+          "description": "Sloosh's design system: dark by default, one yellow (#FECC15) for the main action and display titles, keycap buttons, Bricolage Grotesque titles, pictures carry the colour. Use when building or reviewing any Sloosh screen or component, in dark and light."
         },
         {
           "id": "4lunches",

@@ -64,7 +64,7 @@ a.raised:active, button.raised:active {
   height: 44px; padding: 0 20px;
   border-radius: 999px;
   background: var(--paper); color: var(--ink);
-  font: 500 15px/1 var(--sans); text-decoration: none; cursor: pointer;
+  font: 500 15px/1 var(--sans); text-decoration: none; cursor: pointer; white-space: nowrap;
   --lift: 3px;
 }
 .btn.green { background: var(--green); }
@@ -218,6 +218,10 @@ a.raised:active, button.raised:active {
   .detail-hero .shape { width: 120px; right: auto; left: 20px; bottom: auto; top: 20px; }
   .get { grid-template-columns: 1fr; padding: 16px; }
   .doc { padding: 24px 20px; }
+}
+
+@media (max-width: 380px) {
+  .bar .hide-xs { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

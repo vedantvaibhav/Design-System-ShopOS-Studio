@@ -1,0 +1,1322 @@
+/* ==========================================================================
+   SEMANTIC TOKENS: what each colour is FOR, plus type, space, motion,
+   elevation, z-index and sizing values. Design system v4 (DS4).
+
+   Merged from DS4 src/vendor/tokens.css onto the earlier port of
+   production's packages/ui/src/semantic-tokens.css ("Sloosh only, clean").
+   DS4 adds the brand layer (brand-line, brand-note, glows, filter accents),
+   data types, agents, status yellow, full motion and the --sl-* aliases.
+   Every token the app had before DS4 is still here; DS4 removes nothing.
+   DS2 (unreleased) lives in styles/tokens/ds2.css and applies only inside
+   data-ds2; this file stays DS4 until DS2 ships.
+
+   THEMES (one switch: data-theme on <html>, set by lib/theme.ts)
+     :root, [data-theme="dark"]     dark: the default, and a dark island
+     :root[data-theme="light"]      light: the navbar's sun / moon switch
+   The light block also matches any element with data-theme="light", so a
+   card or band can be white on a dark page (pricing, MCP, /design-system's
+   previews), and [data-theme="dark"] makes a dark island on a light page.
+   <html> keeps class="dark" in step with data-theme (dark: variants) and
+   data-brand="sloosh" (brand-sloosh: variants), so classes copied from
+   production work.
+
+   Token NAMES follow production and DS4, so a developer can map any line
+   back. Values are HSL triples (hsl(var(--x)) in use) unless the comment
+   says "full colour".
+
+   Tailwind classes: bg-<token>, text-<token>, border-<token>, ring-<token>
+   (theme.css maps each one). Example: --muted-foreground -> text-muted-foreground.
+   ========================================================================== */
+
+/* [data-theme="dark"] makes any element a dark island inside a light page
+   (the docs' product mockups), the mirror of [data-theme="light"] below. */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ---- Ground and text --------------------------------------------------- */
+  /* The near-black page ground (#0a0a0a). */
+  --background: var(--neutral-950);
+  /* Body text and headings (#fafafa). */
+  --foreground: var(--neutral-50);
+  /* Secondary text that is still readable on media (#d4d4d4). */
+  --foreground-subtle: var(--neutral-300);
+
+  /* ---- Surfaces ----------------------------------------------------------- */
+  /* Cards, dialogs, panels (#171717). */
+  --card: var(--neutral-900);
+  --card-foreground: var(--neutral-50);
+
+  /* Popovers, menus, selects, tooltips (#171717). */
+  --popover: var(--neutral-900);
+  --popover-foreground: var(--neutral-50);
+
+  /* ---- Actions ------------------------------------------------------------ */
+  /* The neutral primary button: white on black (Button "default"). Sloosh's
+     yellow CTA is --brand-accent below, not this. */
+  --primary: var(--neutral-50);
+  --primary-foreground: var(--neutral-950);
+
+  --secondary: var(--neutral-800);
+  --secondary-foreground: var(--neutral-50);
+
+  /* Filled controls (inputs, selects, chips) and the active nav pill (#262626). */
+  --muted: var(--neutral-800);
+  /* Muted / tertiary text, idle nav links, placeholders (#a3a3a3). */
+  --muted-foreground: var(--neutral-400);
+  --surface-muted: var(--muted);
+  /* Same as --accent / --border, under names Clerk does not set on its own
+     elements (production keeps them for the Clerk overrides). */
+  --surface-accent: var(--accent);
+  --surface-border: var(--border);
+
+  /* Hover fill on a muted control (#404040). */
+  --accent: var(--neutral-700);
+  --accent-foreground: var(--neutral-50);
+
+  --destructive: var(--red-600);
+  --destructive-foreground: var(--neutral-0);
+
+  /* ---- Lines and focus ---------------------------------------------------- */
+  /* Hairlines: the navbar rule, card borders, separators (#262626). */
+  --border: var(--neutral-800);
+  /* Hover/selected edge, one step past --border (#404040). */
+  --border-strong: var(--neutral-700);
+  --input: var(--neutral-700);
+  /* Focus: a 2px outline in this colour (#d4d4d4). */
+  --ring: var(--neutral-300);
+
+  /* ---- Charts ------------------------------------------------------------- */
+  --chart-1: var(--neutral-50);
+  --chart-2: var(--neutral-300);
+  --chart-3: var(--neutral-500);
+  --chart-4: var(--neutral-700);
+  --chart-5: var(--neutral-800);
+
+  /* ---- Sidebar ------------------------------------------------------------ */
+  --sidebar: var(--neutral-800);
+  --sidebar-background: var(--sidebar);
+  --sidebar-foreground: var(--neutral-50);
+  --sidebar-primary: var(--neutral-50);
+  --sidebar-primary-foreground: var(--neutral-950);
+  --sidebar-accent: var(--neutral-700);
+  --sidebar-accent-foreground: var(--neutral-50);
+  --sidebar-border: var(--neutral-700);
+  --sidebar-ring: var(--neutral-300);
+
+  /* ---- Disabled states ---------------------------------------------------- */
+  --surface-disabled: var(--neutral-800);
+  --disabled-foreground: var(--neutral-600);
+  --disabled-border: var(--neutral-700);
+
+  /* ---- Status ------------------------------------------------------------- */
+  /* Destructive, extended */
+  --destructive-border: var(--red-800);
+  --destructive-subtle: var(--red-950);
+  --destructive-subtle-foreground: var(--red-400);
+
+  /* Success */
+  --success: var(--emerald-950);
+  --success-foreground: var(--emerald-400);
+  --success-border: var(--emerald-800);
+
+  /* Warning */
+  --warning: var(--amber-950);
+  --warning-foreground: var(--amber-400);
+  --warning-border: var(--amber-800);
+
+  /* Info */
+  --info: var(--blue-950);
+  --info-foreground: var(--blue-400);
+  --info-border: var(--blue-800);
+
+  /* A person's initial avatar (Google-style: a slate disc, white letter).
+     The same in both themes. */
+  --avatar: var(--slate-700);
+  --avatar-foreground: var(--neutral-0);
+  /* A person's own avatar colour (Avatar's `tone`: Members, Usage by
+     member): a light disc (100) with their initials in the same colour's
+     700, the same in both themes. Never the brand yellow. */
+  --avatar-blue: var(--blue-100);
+  --avatar-blue-foreground: var(--blue-700);
+  --avatar-emerald: var(--emerald-100);
+  --avatar-emerald-foreground: var(--emerald-700);
+  --avatar-amber: var(--amber-100);
+  --avatar-amber-foreground: var(--amber-700);
+  --avatar-violet: var(--violet-100);
+  --avatar-violet-foreground: var(--violet-700);
+  --avatar-red: var(--red-100);
+  --avatar-red-foreground: var(--red-700);
+  --avatar-indigo: var(--indigo-100);
+  --avatar-indigo-foreground: var(--indigo-700);
+
+  /* Violet (Figma status/brand; video ports and wires) */
+  --violet: var(--violet-950);
+  --violet-foreground: var(--violet-400);
+  --violet-border: var(--violet-800);
+
+  /* Status yellow (DS4; the dark values are DS4's guess, Figma has light only).
+     Tailwind yellow, not the brand accent. */
+  --status-yellow: var(--yellow-950);
+  --status-yellow-foreground: var(--yellow-400);
+  --status-yellow-border: var(--yellow-800);
+
+  /* Figma action/brandforeground, kept by its own name (DS4). */
+  --action-brand-foreground: var(--violet-50);
+
+  /* ---- Agents (DS4: Figma "Agents", same in both themes) ------------------ */
+  --agent: var(--red-400);
+  --agents-amber: var(--amber-500);
+  --agents-red: var(--red-600);
+  --agents-green: var(--green-600);
+  --agents-blue: var(--blue-400);
+  --agents-yellow: var(--yellow-500);
+  /* The resting colour of shimmering "thinking" text. Full colour. */
+  --text-shimmer-base: hsl(var(--neutral-400));
+
+  /* ---- Data types (DS4: node ports and tags) ------------------------------ */
+  /* Status tokens, so they follow the theme. A [data-type="image"] element
+     gets --_fill / --_fg from these (bottom of this file). */
+  --data-text: var(--success);
+  --data-text-foreground: var(--success-foreground);
+  --data-image: var(--info);
+  --data-image-foreground: var(--info-foreground);
+  --data-video: var(--violet);
+  --data-video-foreground: var(--violet-foreground);
+  --data-audio: var(--warning);
+  --data-audio-foreground: var(--warning-foreground);
+  --data-any: var(--muted);
+  --data-any-foreground: var(--muted-foreground);
+
+  /* ---- Brand accent: the Sloosh yellow (creative-gen-accent) -------------- */
+  /* The yellow fill: Sign up, Generate, primary buttons, active tab glyphs. */
+  --brand-accent: var(--creative-gen-accent-500);
+  /* Text and icons on the yellow fill (near-black). */
+  --brand-accent-foreground: var(--neutral-950);
+  /* The inset "lip" along the bottom of a primary button. */
+  --brand-accent-edge: var(--creative-gen-accent-700);
+  /* Yellow TEXT on the dark ground: section titles ("Popular This Week").
+     DS4: the brand yellow itself (was the slightly deeper #FAC01A). */
+  --brand-accent-text: var(--creative-gen-accent-500);
+  /* Yellow at label size (12 to 16px: a credit pill, the outline key, the
+     picked tab's label): the yellow on dark, ink on light, where yellow
+     text would be 1.5:1 (the yellow rule). */
+  --brand-accent-label: var(--creative-gen-accent-500);
+  /* A yellow wash behind a selected item; the tinted button. Full colour. */
+  --brand-accent-subtle: hsl(var(--creative-gen-accent-500) / 0.2);
+  /* The tinted button's hover (DS4). Full colour. */
+  --brand-accent-subtle-hover: hsl(var(--creative-gen-accent-500) / 0.3);
+  /* A pick shown as a pill (a form row's value: "Woman", "20s"): the
+     credits chip's light yellow wash and yellow text. */
+  --picked-pill: var(--brand-accent-subtle);
+  --picked-pill-foreground: var(--brand-accent-text);
+  /* Silver (Nov 2026): a cool sheen for a showcase card (the Spaces
+     walkthrough): the glow behind its screen, and a faint wash across the
+     card from the top. Neutral greys at low alpha, so the card's own ground
+     shows through. Full colours. */
+  --silver-sheen: hsl(var(--neutral-300) / 0.2);
+  --silver-sheen-soft: hsl(var(--neutral-300) / 0.07);
+  /* A disabled primary or outline button (Oct 2026): a sunk, dimmed yellow,
+     never grey. The face sits darker than the tinted wash; the label and the
+     outline's edge drop to the deepest gold, so contrast falls to about
+     2.7:1 (the grey disabled was about 2:1). Face: full colour. */
+  --brand-accent-disabled: hsl(var(--creative-gen-accent-800) / 0.32);
+  --brand-accent-disabled-foreground: var(--creative-gen-accent-800);
+  --brand-accent-disabled-edge: var(--creative-gen-accent-800);
+  /* The cost pill inside a disabled primary: one more layer of the same
+     gold, so it still reads as a chip on the sunk face. Full colour. */
+  --brand-accent-disabled-pill: hsl(var(--creative-gen-accent-800) / 0.32);
+  /* The disabled face under an offer strip (OfferRunFold): solid, so the
+     strip tucked behind it never shows through, and a sunk gold a clear
+     step darker than the strip's yellow wash (16% over the card, not the
+     32% face), so the button and the strip read as two layers. */
+  --brand-accent-disabled-solid: color-mix(in srgb, hsl(var(--creative-gen-accent-800)) 16%, hsl(var(--card)));
+  /* Ring around a selected brand item. */
+  --brand-accent-ring: var(--creative-gen-accent-100);
+  /* Space form tiles (Oct 2026): the one picked state, a 2px ring on a
+     picked card or option, and the required field's * (the same yellow). */
+  --picked-ring: var(--creative-gen-accent-500);
+  /* A raised key on a muted tile (space form tiles): the stepper's - / +,
+     the upload icon discs, an @ tag in a prompt. One step above --muted. */
+  --key-face: var(--neutral-700);
+  --key-face-hover: var(--neutral-600);
+  /* A pill on the brand fill, e.g. the CTA's credit count. Full colour. */
+  --brand-accent-chip: hsl(var(--neutral-50) / 0.48);
+  /* DS4's name for the same pill (a cost pill on a primary button), on the
+     palest accent step. Full colour. */
+  --brand-accent-pill: hsl(var(--creative-gen-accent-50) / 0.48);
+  /* Halo and running-node glow (DS4). Full colour. */
+  --brand-accent-glow: hsl(var(--creative-gen-accent-500) / 0.35);
+  /* Hatch strokes on drawn marks (DS4). Full colour. */
+  --brand-accent-light: hsl(var(--creative-gen-accent-300));
+  /* Opaque amber under the credit banner (Figma 1394:50107). Production
+     defines this one in apps/sloosh/app/globals.css as a literal; it is a
+     token here so it lives with the other accent values. */
+  --brand-accent-surface: 44.6 49.3% 13.9%;
+  /* A favorited heart. Full colour. */
+  --brand-favorite: hsl(var(--creative-gen-accent-500));
+
+  /* ---- Brand: the drawn layer (DS4, formerly "ink") ------------------------ */
+  /* Lines and faces stay neutral so they follow the theme. Full colours.
+     Used by the SlooshInk engine (critters, the pointer, drawn marks). */
+  /* Outlines, handwriting, arrows. */
+  --brand-line: hsl(var(--foreground));
+  /* Asides, a second pen pass. */
+  --brand-line-soft: hsl(var(--muted-foreground));
+  /* Sketch boxes, dotted trails. */
+  --brand-line-faint: hsl(var(--border-strong));
+  /* The pointer's note card, sticky notes. */
+  --brand-note: hsl(var(--card));
+  /* Critter and logo eye whites. */
+  --brand-eye-white: hsl(var(--neutral-0));
+  /* The ground shadow under drawn things (follows the theme). */
+  --brand-shadow: hsl(var(--muted-foreground) / 0.3);
+  /* Critters: one look on every surface (Oct 2026). A critter is an
+     illustration, not ink on the page, so its outline and the shadow under
+     it never follow the theme or a ground (data-theme, data-ground): the
+     same white edge and soft grey shadow as on /design-system, everywhere.
+     Read by public/vendor/sloosh-ink/sloosh-ink.css (.sl-critter). */
+  --critter-line: hsl(var(--neutral-50));
+  --critter-shadow: hsl(var(--neutral-400) / 0.3);
+
+  /* ---- Brand: glows (DS4: Stage, the ember; flat fills) ------------------------ */
+  --brand-glow-light: hsl(var(--creative-gen-accent-400));
+  --brand-glow: hsl(var(--creative-gen-accent-600));
+  --brand-glow-deep: hsl(var(--creative-gen-accent-800));
+
+  /* ---- The Creator Pass: foil, glare and glow (Nov 2026) ------------------ */
+  /* The pass card's holographic foil and pointer glare, and the soft yellow
+     glow round the pass and the code field's beam. A design decision, like
+     the voice blob: the pass is the one card that shines. Same in both
+     themes (components/creator-pass/creator-pass.css). */
+  --pass-foil-warm: hsl(var(--creative-gen-accent-300) / 0.55);
+  --pass-foil-cool: hsl(var(--blue-200) / 0.4);
+  --pass-foil-light: hsl(var(--neutral-0) / 0.5);
+  --pass-glare: hsl(var(--neutral-0) / 0.6);
+  --pass-glow: hsl(var(--creative-gen-accent-500) / 0.3);
+  --pass-glow-strong: hsl(var(--creative-gen-accent-500) / 0.75);
+
+  /* ---- The AI Film Award: silver (Nov 2026) -------------------------------- */
+  /* A design decision, like the Creator Pass: the award page (/ai-film-award)
+     is polished silver on black, after the award's own look. The metal on
+     its big type (title, prize) and the silver keycap that is its one main
+     action, in place of the yellow. Defined once here: the light theme
+     inherits them, and only that page uses them (components/ai-film-award/
+     metal.ts, Button "silver"). */
+  --award-metal: linear-gradient(
+    to bottom,
+    hsl(var(--neutral-0)) 18%,
+    hsl(var(--neutral-0) / 0.4) 52%,
+    hsl(var(--neutral-0) / 0.95) 60%,
+    hsl(var(--neutral-0) / 0.55) 100%
+  );
+  --award-key: var(--neutral-300);
+  --award-key-hover: var(--neutral-200);
+  --award-key-edge: var(--neutral-500);
+  --award-key-foreground: var(--neutral-950);
+  --award-key-face: linear-gradient(
+    to bottom,
+    hsl(var(--neutral-0)) 0%,
+    hsl(var(--neutral-200)) 34%,
+    hsl(var(--neutral-400)) 52%,
+    hsl(var(--neutral-300)) 70%,
+    hsl(var(--neutral-100)) 100%
+  );
+
+  /* ---- The Black Friday sale: black, chrome and prism light (Nov 2026) --- */
+  /* A design decision, like the Creator Pass and the AI Film Award: while a
+     plan sale runs, its surfaces (the bar, the /pricing banner, the
+     recommended card, the pop-up, the pills) go black, with chrome type,
+     silver pills and real prism light (photos made for the Screen blend
+     mode, public/mock/sale, see CREDITS.md) blurred inside them and at
+     their rim, after the user's Black Friday reference. Never a synthetic
+     hue sweep (Rules, 17). Only the sale reads these (components/sale/
+     sale.css). The black, the light and the silver are the same in both
+     themes (its frames are dark islands). */
+  --sale-ground: var(--neutral-950);
+  --sale-foreground: var(--neutral-50);
+  --sale-muted: var(--neutral-400);
+  --sale-ink: var(--neutral-950);
+  /* Type cut from chrome, kept quiet: bright top, a soft grey band through the middle, a lit lower half. */
+  --sale-chrome: linear-gradient(
+    to bottom,
+    hsl(var(--neutral-0)) 20%,
+    hsl(var(--neutral-200)) 48%,
+    hsl(var(--neutral-300)) 54%,
+    hsl(var(--neutral-50)) 70%,
+    hsl(var(--neutral-200)) 100%
+  );
+  /* A pill's polished silver face (dark words on it). */
+  --sale-silver: linear-gradient(
+    to bottom,
+    hsl(var(--neutral-0)) 0%,
+    hsl(var(--neutral-200)) 48%,
+    hsl(var(--neutral-300)) 52%,
+    hsl(var(--neutral-100)) 100%
+  );
+  /* The prism light: four photos of light through glass on black, each a different sweep. */
+  --sale-prism-1: url("/mock/sale/prism-1.jpg");
+  --sale-prism-2: url("/mock/sale/prism-2.jpg");
+  --sale-prism-3: url("/mock/sale/prism-3.jpg");
+  --sale-prism-4: url("/mock/sale/prism-4.jpg");
+
+  /* ---- Brand: filter accents (DS4: small drawn accents) ------------------- */
+  /* Drawn checks. */
+  --brand-filter-accent-1: hsl(var(--emerald-400));
+  /* Hearts, tears. */
+  --brand-filter-accent-2: hsl(var(--red-400));
+  /* Drops, bubbles. */
+  --brand-filter-accent-3: hsl(var(--blue-300));
+  /* Another person's marks. */
+  --brand-filter-accent-4: hsl(var(--blue-400));
+  /* Sparks, the notice dot. */
+  --brand-filter-accent-5: hsl(var(--amber-400));
+  /* Critter cheeks. */
+  --brand-filter-accent-6: hsl(var(--red-300));
+
+  /* ---- Overlays ----------------------------------------------------------- */
+  /* Modal backdrops. Full colours. */
+  --dialog-overlay: hsl(var(--neutral-950) / 0.8);
+  --dialog-overlay-strong: hsl(var(--neutral-950) / 0.8);
+  --drawer-overlay: hsl(var(--neutral-950) / 0.8);
+
+  /* ---- On media: text and shades over photos and videos ------------------- */
+  /* Not in production (it writes text-white / bg-black/40 inline); added so
+     every card, band and badge over a picture reads one place. The same in
+     both themes: the picture under them doesn't change with the theme. */
+  /* Titles, labels and icons over a picture (#ffffff). text-on-media. */
+  --on-media: var(--neutral-0);
+  /* Secondary lines over a picture: subtitles, run counts (#d4d4d4).
+     text-on-media-muted. */
+  --on-media-muted: var(--neutral-300);
+  /* Third-party app marks in their own colour (the same in both themes):
+     Claude's coral, for its mark beside "Sloosh MCP". ChatGPT's mark stays white. */
+  --app-claude: 15 63% 60%;
+  /* The dark of every scrim, band and fade over a picture (pure black; the
+     ramp's darkest step, neutral-950, is #0a0a0a). Always used with an
+     alpha: bg-media-scrim/40, to-media-scrim/60, from-media-scrim. */
+  --media-scrim: 0 0% 0%;
+
+  /* ---- Gradual blur (components/ui/gradual-blur.tsx) ----------------------
+     The tint under a fading blur band over a picture, and the text on it.
+     Pure black (as media-scrim) with white text, in both themes: a light
+     band over a dark photo read as a grey haze with dark text sinking into
+     the picture. The tint is a flat colour; the band's alpha mask fades
+     it, so no gradient.
+     bg-blur-scrim, text-on-blur, text-on-blur-muted. */
+  --blur-scrim: var(--media-scrim);
+  --on-blur: var(--neutral-0);
+  --on-blur-muted: var(--neutral-300);
+  /* How much a band's scrim opacity is raised (1: as set). Kept as a knob
+     for a future light band. */
+  --blur-scrim-boost: 1;
+
+  /* ---- Toasts (components/ui/toaster.tsx) --------------------------------- */
+  /* Figma 1477:89141: no ring, a soft drop shadow, and the action button
+     (#d4d4d4 on #525252 text). 20px up from the bottom. */
+  --toast-bottom: 20px;
+  /* Phone toasts sit over the 61px tab bar, like the nudges. */
+  --toast-bottom-mobile: 80px;
+  --toast-ring-width: 0px;
+  --toast-shadow: 0 12px 12px 0 rgb(0 0 0 / 0.5);
+  --toast-action: hsl(var(--neutral-300));
+  --toast-action-foreground: hsl(var(--neutral-600));
+  /* The card itself: white, near-black text (production's dark-theme toast).
+     bg-toast, text-toast-foreground. */
+  --toast: var(--neutral-0);
+  --toast-foreground: var(--neutral-950);
+  /* The X and the loading spinner. */
+  --toast-muted: var(--neutral-500);
+  /* The status icons, dark enough to read on the white card. */
+  --toast-success: var(--emerald-700);
+  --toast-error: var(--red-600);
+  --toast-warning: var(--amber-700);
+  --toast-info: var(--blue-700);
+
+  /* ---- Paper (Jam with team) ---------------------------------------------- */
+  /* A sheet of light paper: the ticket stub printed when a Jam ticket is
+     sent (components/jam/ticket-stub.tsx). Paper stays paper in both
+     themes; light only makes it pure white and gives it a hairline edge.
+     bg-paper, text-paper-foreground, text-paper-muted, border-paper-line,
+     bg-paper-tag, text-paper-ink. */
+  /* The sheet (#fafafa). */
+  --paper: var(--neutral-50);
+  /* Titles and values on it (#0a0a0a). */
+  --paper-foreground: var(--neutral-950);
+  /* Labels and secondary lines on it (#737373). */
+  --paper-muted: var(--neutral-500);
+  /* The ticket's dashed perforation (#d4d4d4). */
+  --paper-line: var(--neutral-300);
+  /* The grey "Received" tag on the ticket (#e5e5e5). */
+  --paper-tag: var(--neutral-200);
+  /* The barcode's ink (#262626). */
+  --paper-ink: var(--neutral-800);
+  /* The sheet's hairline: none on the dark app (the paper is the lightest
+     thing on screen); light gives it one. Full colour. border-paper-edge. */
+  --paper-edge: transparent;
+
+  /* ---- Controls ------------------------------------------------------------ */
+  /* The switch knob when off (white); when on it takes --primary-foreground. */
+  --switch-thumb: var(--neutral-0);
+  /* The light "raised" fill (pre-DS4 Button variant="raised", now an alias
+     of "default"; kept for anything else that reads it). */
+  --raised: var(--neutral-0);
+  --raised-end: var(--neutral-200);
+  --raised-foreground: var(--neutral-800);
+  --raised-border: var(--neutral-300);
+  /* The slab keycap (Oct 2026, "Rounded slab"): each filled button style's
+     hover face, the solid lip under it and the glint that sweeps across.
+     components/ui/button-variants.ts + the keycap-slab utility (theme.css). */
+  --brand-accent-hover: var(--creative-gen-accent-400);
+  --primary-edge: var(--neutral-300);
+  --secondary-edge: var(--neutral-700);
+  --destructive-edge: var(--red-800);
+  --keycap-shine: hsl(var(--neutral-0) / 0.85);
+  --keycap-shine-soft: hsl(var(--neutral-0) / 0.12);
+  /* A loading card's face (.skeleton-shimmer): a step darker than --muted,
+     so it never blends into a muted control over it (the docked composer's
+     fold), a step lighter than the page. */
+  --skeleton: var(--neutral-900);
+  /* The band of light that crosses loading cards. Full colour. */
+  --skeleton-shine: hsl(var(--neutral-0) / 0.11);
+  /* The savings pill ("-20%", "$120"; DS4 pricing). */
+  --savings: var(--emerald-700);
+  --savings-foreground: var(--neutral-50);
+  /* The ink button (DS4): a black keycap with yellow text, for yellow
+     grounds. The same in both themes. Its lip, hover and disabled fills. */
+  --ink: var(--neutral-950);
+  --ink-foreground: var(--creative-gen-accent-500);
+  --ink-hover: var(--neutral-800);
+  --ink-edge: var(--neutral-700);
+  --ink-disabled: var(--neutral-800);
+  --ink-disabled-foreground: var(--neutral-500);
+
+  /* ---- Phone layers (the Sloosh mobile prototype) -------------------------- */
+  /* The surface ladder for phone sheets and screens (#141414 to #303030),
+     hairlines, dim text, scrim and the low-credit banner. Full colours. */
+  --layer-1: hsl(0 0% 8%);
+  --layer-2: hsl(0 0% 11%);
+  --layer-3: hsl(0 0% 15%);
+  --layer-4: hsl(0 0% 19%);
+  --layer-line: hsl(var(--neutral-0) / 0.08);
+  --layer-line-strong: hsl(0 0% 100% / 0.14);
+  --layer-dim: hsl(0 0% 44%);
+  --layer-scrim: hsl(0 0% 0% / 0.6);
+  --layer-warn: hsl(48 49% 15%);
+  --layer-warn-foreground: hsl(47 76% 80%);
+
+  /* ---- Model logo tile ----------------------------------------------------- */
+  /* The light square behind a model's mark in the model picker
+     (components/ui/model-logo.tsx, variant "badge"): light in both themes,
+     as production keeps it, so dark glyphs (OpenAI's) stay visible.
+     bg-model-badge, text-model-badge-foreground. */
+  --model-badge: var(--neutral-50);
+  --model-badge-foreground: var(--neutral-950);
+
+  /* ---- App-icon tiles ------------------------------------------------------ */
+  /* A glyph on a solid colour, like an app icon (onboarding's answers,
+     components/onboarding/icons.tsx): one flat colour (no gradients) and
+     a white glyph, the same in both themes so the glyph always reads.
+     bg-app-tile-<c> text-app-tile-foreground. */
+  --app-tile-foreground: var(--neutral-50);
+  --app-tile-blue: var(--blue-600);
+  --app-tile-violet: var(--violet-600);
+  --app-tile-red: var(--red-600);
+  --app-tile-green: var(--emerald-600);
+  --app-tile-orange: var(--amber-700);
+  --app-tile-indigo: var(--indigo-600);
+  --app-tile-grey: var(--neutral-600);
+
+  /* ---- Logo and scrollbars ------------------------------------------------- */
+  /* The logo's lip (components/shell/sloosh-logo.tsx): a flat copy of the
+     wordmark just under it, in the keycap lip's darker yellow, so the
+     yellow letters and white eyes hold their shape on a light ground.
+     Transparent on dark (the art is unchanged there). Full colour.
+     fill-logo-lip. */
+  --logo-lip: transparent;
+  /* The scrollbar thumb (styles/theme.css, base layer). Full colour. */
+  --scrollbar-thumb: hsl(0 0% 21.6%);
+  /* The hairline inside every picture card's frame (CARD_IMAGE_EDGE), so a
+     picture never bleeds into the surface. Full colour: white at 10%. */
+  --image-edge: hsl(0 0% 100% / 0.1);
+
+
+  /* ---- DS2 names, defined here so their Tailwind classes resolve on every
+     screen (styles/tokens/ds2.css re-points them inside data-ds2). ---- */
+  --lip: var(--neutral-700);
+  --success-subtle: var(--success);
+  --success-subtle-foreground: var(--success-foreground);
+  --warning-subtle: var(--warning);
+  --warning-subtle-foreground: var(--warning-foreground);
+  --info-subtle: var(--info);
+  --info-subtle-foreground: var(--info-foreground);
+  --violet-subtle: var(--violet);
+  --violet-subtle-foreground: var(--violet-foreground);
+  --brand-accent-subtle-foreground: var(--creative-gen-accent-500);
+  --brand-accent-border: var(--creative-gen-accent-800);
+  --motion-spring: var(--motion-spring-pop);
+
+  /* ---- Fonts (DS4) ---------------------------------------------------------
+     Bricolage Grotesque (display) and Caveat (the hand) are self-hosted by next/font
+     (app/layout.tsx), which sets --font-display-raw / --font-caveat-raw on <html>.
+     Tailwind: font-sans, font-display, font-hand (theme.css). */
+  --sl-font-sans: "SF Pro Text", "SF Pro", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, ui-sans-serif, system-ui, sans-serif;
+  --sl-font-display: var(--font-display-raw, "Bricolage Grotesque"), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --sl-font-hand: var(--font-caveat-raw, "Caveat"), "Segoe Print", "Bradley Hand", "Comic Neue", cursive;
+  /* Code and keyboard hints (the docs' agent view, ⌘K). */
+  --sl-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* A screenplay (Microdrama's script page): Courier Prime, next/font (app/layout.tsx). Scripts only. */
+  --sl-font-script: var(--font-script-raw, "Courier Prime"), "Courier New", Courier, monospace;
+
+  /* ---- Type styles (DS4, developers only) ----------------------------------
+     Each one is a full `font` shorthand: font: var(--sl-text-sm). DS4 calls
+     them --text-*; in this app --text-* are Tailwind's font sizes, so the
+     shorthands carry an --sl- prefix. The Tailwind classes text-caption,
+     text-sm, text-base, text-text-20, text-display-*, text-hand-* (theme.css)
+     produce the same size, weight and line height. One scale for every face:
+     12 14 16 20 24 36 48 60. Line height 120% for titles and handwriting,
+     140% for everything else. Bricolage Grotesque is variable; the display steps use 800. */
+  --sl-text-display-60: 800 60px/120% var(--sl-font-display);
+  --sl-text-display-48: 800 48px/120% var(--sl-font-display);
+  --sl-text-display-36: 800 36px/120% var(--sl-font-display);
+  --sl-text-display-24: 800 24px/120% var(--sl-font-display);
+  --sl-text-display-20: 800 20px/120% var(--sl-font-display);
+  --sl-text-text-20: 600 20px/120% var(--sl-font-sans);
+  --sl-text-base: 500 16px/140% var(--sl-font-sans);
+  --sl-text-base-strong: 600 16px/140% var(--sl-font-sans);
+  --sl-text-sm: 500 14px/140% var(--sl-font-sans);
+  --sl-text-sm-strong: 600 14px/140% var(--sl-font-sans);
+  --sl-text-sm-num: 700 14px/140% var(--sl-font-sans);
+  --sl-text-caption: 500 12px/140% var(--sl-font-sans);
+  --sl-text-caption-strong: 600 12px/140% var(--sl-font-sans);
+  --sl-text-caption-caps: 600 12px/140% var(--sl-font-sans);
+  --sl-text-caption-caps-tracking: 0.04em;
+  --sl-text-hand-48: 700 48px/120% var(--sl-font-hand);
+  --sl-text-hand-36: 700 36px/120% var(--sl-font-hand);
+  --sl-text-hand-24: 700 24px/120% var(--sl-font-hand);
+  --sl-text-hand-20: 600 20px/120% var(--sl-font-hand);
+  --sl-text-hand-16: 600 16px/120% var(--sl-font-hand);
+  /* Code: anything the reader copies (commands, config, server addresses,
+     messages to paste). The one monospace style. Tailwind: text-code. */
+  --sl-text-code: 400 14px/24px var(--sl-font-mono);
+  /* Script: a screenplay's text (scene headings, action, names, dialogue). Tailwind: text-script. */
+  --sl-text-script: 400 16px/28px var(--sl-font-script);
+
+  /* The same scale in parts, for plain CSS that sets size, weight or line
+     height on its own (public/docs). Prefer the shorthands. */
+  --sl-type-12: 12px;
+  --sl-type-14: 14px;
+  --sl-type-16: 16px;
+  --sl-type-20: 20px;
+  --sl-type-24: 24px;
+  --sl-type-36: 36px;
+  --sl-type-48: 48px;
+  --sl-type-60: 60px;
+  --sl-leading-text: 140%;
+  --sl-leading-title: 120%;
+  --sl-weight-display: 400;
+  --sl-weight-regular: 500;
+  --sl-weight-strong: 600;
+  --sl-weight-bold: 700;
+
+  /* ---- Radius --------------------------------------------------------------
+     The base corner. Every rounded-* step is a multiple of it (theme.css):
+     DS4 values at 8px are sm 4, md 6, lg 8, xl 12, 2xl 16, panel 20,
+     sheet 24. rounded-wobble (sticky notes, Stage) is DS4's hand-cut shape.
+     Production: theme.css `@layer base { :root { --radius } }`. */
+  --radius: 0.5rem;
+  /* DS4's hand-cut corner (sticky notes, the Stage). Not tied to --radius.
+     Tailwind: rounded-wobble. */
+  --sl-radius-wobble: 255px 18px 225px 18px / 18px 225px 18px 255px;
+
+  /* ---- Spacing (DS4, developers only) --------------------------------------
+     Figma "Spacing", in px. NOT Tailwind's spacing scale: p-6 is still 24px.
+     Use one as p-(--spacing-24). Gaps snap to this scale (ties go up). */
+  --spacing-0: 0px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-96: 96px;
+  --spacing-128: 128px;
+  --spacing-160: 160px;
+
+  /* ---- Elevation (DS4) -----------------------------------------------------
+     Read by the Tailwind shadows shadow-float, shadow-modal, shadow-halo,
+     shadow-lip, shadow-lip-lg (theme.css); light has its own float/modal. */
+  --sl-shadow-lip: inset 0 -2px 0 0 hsl(var(--brand-accent-edge));
+  --sl-shadow-lip-lg: inset 0 -4px 0 0 hsl(var(--brand-accent-edge));
+  --sl-shadow-float: 0 12px 32px -6px hsl(var(--neutral-950) / 0.55), 0 0 0 1px hsl(var(--border));
+  --sl-shadow-modal: 0 24px 64px -12px hsl(var(--neutral-950) / 0.65), 0 0 0 1px hsl(var(--border));
+  --sl-shadow-halo: 0 0 0 1px hsl(var(--brand-accent)), 0 0 24px -4px var(--brand-accent-glow);
+  /* Soft drop under a resting surface (Studio composer). Tailwind: shadow-surface. */
+  --sl-shadow-surface: 0 12px 16px 0 hsl(var(--media-scrim) / 0.02);
+
+  /* ---- No gradients (Oct 2026) ---------------------------------------------
+     Sloosh uses flat colours only. DS4's four gradients (scrim, fade-up,
+     glow-amber, glow-ember) were removed with their bg-gradient-* utilities:
+     use a flat token instead (bg-media-scrim/40, bg-background,
+     bg-brand-glow, bg-brand-glow-deep...). */
+
+  /* ---- Motion ----------------------------------------------------------------
+     One set for the whole app (DS4), named as before. Use as
+     duration-(--motion-duration-enter) ease-(--motion-ease-out).
+     Production: theme.css `:root { --motion-* }`. */
+  /* Keycap press. */
+  --motion-duration-instant: 80ms;
+  /* Hover, colour. */
+  --motion-duration-fast: 120ms;
+  /* Pill colour, small fades. */
+  --motion-duration-micro: 150ms;
+  /* Menus, tabs, overlays, card reveal. */
+  --motion-duration-enter: 200ms;
+  /* Leaving. */
+  --motion-duration-exit: 200ms;
+  /* Toast slides up 8px. */
+  --motion-duration-toast: 220ms;
+  /* Scrims behind phone sheets. */
+  --motion-duration-scrim: 250ms;
+  /* Rings, brackets. */
+  --motion-duration-ring: 260ms;
+  /* Screen change, dialog rise. */
+  --motion-duration-screen: 280ms;
+  /* Phone sheets rising. */
+  --motion-duration-sheet: 320ms;
+  /* Modals, toasts. */
+  --motion-duration-slow: 320ms;
+  /* Pointer flight. */
+  --motion-duration-fly: 520ms;
+  /* Critter pop-in, bursts. */
+  --motion-duration-pop: 560ms;
+  /* Critter entrances. */
+  --motion-duration-lazy: 600ms;
+  --motion-duration-underline: 650ms;
+  /* A figure drawing itself. */
+  --motion-duration-draw: 800ms;
+  /* Critter idle. */
+  --motion-duration-breathe: 3400ms;
+  /* Line jitter frame. */
+  --motion-duration-boil: 154ms;
+  /* A letter of handwriting. */
+  --motion-duration-write: 38ms;
+  --motion-duration-write-title: 70ms;
+  /* Ink leaves in 40% of its arrival time. */
+  --motion-undraw-ratio: 0.4;
+  /* Screens, dialogs, toasts, card reveal. */
+  --motion-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Entrances and the card rise: a strong ease-out, fast out of the gate
+     and settled early, the same everywhere (DESIGN_SYSTEM.md, Motion). */
+  --motion-ease-arrive: cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-duration-arrive: 300ms;
+  --motion-duration-arrive-fade: 200ms;
+  /* Leaving. */
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  /* Ink, meters, tiles (DS4 "settle"). */
+  --motion-ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* The pre-DS4 name of settle (steppers, ticks). */
+  --motion-ease-tick: var(--motion-ease-settle);
+  /* Sheets, carousels, the tab pill. */
+  --motion-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Pops, hops, tags; overshoots. */
+  --motion-ease-hop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Keycap press. */
+  --motion-ease-lip: cubic-bezier(0.3, 0, 0.2, 1);
+  /* Pen strokes. */
+  --motion-ease-draw: cubic-bezier(0.33, 1, 0.68, 1);
+  /* Squash and stretch. */
+  --motion-ease-squash: cubic-bezier(0.3, 0.7, 0.3, 1);
+  /* The pointer's arc. */
+  --motion-ease-fly: cubic-bezier(0.45, 0, 0.2, 1);
+  /* Springs as linear() curves; each pairs with a -duration. */
+  --motion-spring-pop: linear(0, 0.0237, 0.0854, 0.174, 0.2798, 0.3943, 0.5106, 0.623, 0.7276, 0.8213, 0.9025, 0.9702, 1.0244, 1.0657, 1.0951, 1.1138, 1.1234, 1.1255, 1.1215, 1.1131, 1.1015, 1.0879, 1.0734, 1.0589, 1.0449, 1.032, 1.0205, 1.0106, 1.0024, 0.9959, 0.991, 0.9875, 0.9854, 0.9844, 0.9843, 0.9849, 0.986, 0.9875, 0.9893, 0.9911, 0.9929, 0.9947, 0.9963, 0.9977, 0.9989, 0.9999, 1.0006, 1.0012, 1);
+  --motion-spring-card: linear(0, 0.0138, 0.0478, 0.0981, 0.1565, 0.2208, 0.2902, 0.3578, 0.4241, 0.49, 0.5502, 0.6063, 0.6598, 0.7068, 0.7492, 0.7885, 0.8221, 0.8526, 0.8783, 0.9006, 0.9204, 0.9367, 0.9505, 0.9624, 0.972, 0.9799, 0.9865, 0.9916, 0.9957, 0.9989, 1.0013, 1.0031, 1.0044, 1.0052, 1.0057, 1.006, 1.006, 1.0059, 1.0056, 1.0053, 1.005, 1.0046, 1.0042, 1.0037, 1.0033, 1.003, 1.0026, 1.0023, 1);
+  --motion-spring-ui: linear(0, 0.0278, 0.0978, 0.193, 0.3006, 0.411, 0.5175, 0.6159, 0.7034, 0.779, 0.8424, 0.8942, 0.9352, 0.9668, 0.9901, 1.0067, 1.0177, 1.0243, 1.0276, 1.0284, 1.0274, 1.0254, 1.0226, 1.0195, 1.0164, 1.0134, 1.0106, 1.0082, 1.0061, 1.0043, 1.0029, 1.0017, 1.0009, 1.0002, 0.9998, 0.9995, 0.9993, 0.9992, 0.9992, 0.9992, 1);
+  /* Bounce 0.15, overshoot under 1%: cards rising in. */
+  --motion-spring-card-duration: 550ms;
+  /* Bounce 0.45, overshoot about 12%: critters, pills, title letters. */
+  --motion-spring-pop-duration: 450ms;
+  /* Bounce 0.25, overshoot about 3%: toggles, steppers, the FAQ x. */
+  --motion-spring-ui-duration: 400ms;
+
+  /* ---- Ink geometry (DS4, the SlooshInk engine) ---------------------------- */
+  --sl-ink-w-fine: 1.2px;
+  --sl-ink-w: 1.6px;
+  --sl-ink-w-bold: 2.1px;
+  --sl-ink-roughness-structure: 1.1;
+  --sl-ink-roughness-face: 0.4;
+  --sl-ink-roughness-fast: 1.5;
+  --sl-ink-hatch-gap: 3.9px;
+  --sl-ink-hatch-angle: -44deg;
+  --sl-ink-lift-gap: 4%;
+  --sl-ink-boil-scale: 2.4;
+  --sl-ink-boil-frequency: 0.02;
+  --sl-ink-idle-max: 4px;
+
+  /* ---- Z-index (DS4) ------------------------------------------------------- */
+  /* Use as z-(--sl-z-modal). The app's own layers still use z-40 / z-50. */
+  --sl-z-base: 0;
+  --sl-z-sticky: 40;
+  /* A full-screen surface (Microdrama's large view): over the page and what sticks to it, under every popup. */
+  --sl-z-surface: 45;
+  --sl-z-dropdown: 50;
+  --sl-z-sheet: 60;
+  --sl-z-modal: 70;
+  --sl-z-toast: 80;
+  --sl-z-ink: 85;
+  --sl-z-pointer: 90;
+  --sl-z-tooltip: 95;
+
+  /* ---- Sizing (DS4) ---------------------------------------------------------
+     Figma frame measures, for reference and new code (developers only). */
+  --sl-page-pad: 20px;
+  --sl-nav-h: 61px;
+  --sl-tabbar-h: 61px;
+  --sl-logo-h-nav: 32px;
+  --sl-logo-h-phone: 28px;
+  --sl-tile-hero-w: 540px;
+  --sl-tile-col: 353px;
+  --sl-run-form-w: 345px;
+  --sl-composer-max: 860px;
+  /* Explore (the home page, components/home): the content column, gutters included
+     (max-w-home); 32px gutters (16 on phones) inside it. */
+  --sl-home-wrap: 1504px;
+  /* First fold: keep the next section visible without crowding the upload UI. */
+  --sl-home-hero-min-h: 480px;
+  --sl-home-hero-max-h: 800px;
+  --sl-home-hero-phone-min-h: 440px;
+  --sl-home-hero-phone-max-h: 640px;
+  --sl-pointer-size: 28px;
+  --sl-pointer-size-touch: 36px;
+  --sl-critter-sm: 32px;
+  --sl-critter-md: 56px;
+  --sl-critter-lg: 96px;
+  --sl-critter-xl: 160px;
+  /* Jam with team (components/jam): the tray's width, its minimum height
+     (the empty state sits centred in it) and the list's cap before it
+     scrolls; the new-ticket modal's width. Both heights also give way to
+     70% of a short screen where they are used. */
+  --sl-jam-tray-w: 440px;
+  --sl-jam-tray-min-h: 440px;
+  --sl-jam-tray-list-max-h: 560px;
+  --sl-jam-modal-w: 600px;
+  /* The offer-claim toast (components/offers/offers-provider.tsx): wider
+     than the usual toast so its title and line stay one line each beside
+     Use in Studio. Phones take the full width. */
+  --sl-toast-w-wide: min(448px, calc(100vw - 32px));
+  /* How much room the navbar's centred pills leave on each side, by what
+     its right side holds (components/shell/sloosh-navbar.tsx): signed in
+     (theme switch + credits pill + bell + avatar, as production) or signed out
+     (theme switch + Jam icon + Login + Sign up; Jam label from 1536px,
+     the -out-2xl value). Measured, so the pills never run under the right
+     side; the theme switch added 48 (36 + a 12 gap) to each. */
+  --sl-nav-reserve-in: 240px;
+  --sl-nav-reserve-in-xl: 300px;
+  --sl-nav-reserve-out: 260px;
+  --sl-nav-reserve-out-2xl: 398px;
+
+  /* ---- Canvas (Spacelab) ---------------------------------------------------
+     Production: packages/canvas/src/space-builder.css, dark values. Read as
+     var(--port-image) etc. (no Tailwind class). Wire colours by data type:
+     the foreground when hovered or selected, a quieter rest, and the chip
+     fill for the glyph on the disconnect disc. */
+  --port-text: hsl(var(--success-foreground));
+  --port-text-rest: hsl(var(--success-border) / 0.5);
+  --port-text-on: hsl(var(--success));
+  --port-image: hsl(var(--info-foreground));
+  --port-image-rest: hsl(var(--info-border) / 0.5);
+  --port-image-on: hsl(var(--info));
+  --port-video: hsl(var(--violet-foreground));
+  --port-video-rest: hsl(var(--violet-border) / 0.5);
+  --port-video-on: hsl(var(--violet));
+  --port-audio: hsl(var(--warning-foreground));
+  --port-audio-rest: hsl(var(--warning-border) / 0.5);
+  --port-audio-on: hsl(var(--warning));
+  --port-media: hsl(var(--info-foreground));
+  --port-media-rest: hsl(var(--info-border) / 0.5);
+  --port-media-on: hsl(var(--info));
+  --port-setting: hsl(var(--muted-foreground));
+  --port-setting-rest: hsl(var(--border));
+  --port-setting-on: hsl(var(--muted));
+  /* Run-status colours (run drawer, node state badges). */
+  --status-pending: oklch(0.6 0 0);
+  --status-running: oklch(0.7 0.15 240);
+  --status-completed: oklch(0.7 0.18 145);
+  --status-failed: oklch(0.65 0.22 25);
+  --status-paused: oklch(0.75 0.16 80);
+  --status-awaiting-approval: oklch(0.75 0.16 80);
+  /* Floating canvas chrome (toolbars, node cards, flyouts). */
+  --canvas-float-shadow: 0 12px 24px rgb(0 0 0 / 0.5);
+}
+
+/* ==========================================================================
+   LIGHT THEME (Oct 2026: the app's second theme, switched from the navbar)
+   <html data-theme="light"> (no `dark` class) turns the whole app light;
+   lib/theme.ts and the script in app/layout.tsx set it before first paint.
+
+   Sources: DS4's light block (Figma "Color System"), then production's
+   light values (packages/ui/src/semantic-tokens.css, ShopOS's defaults)
+   for every token DS4 left out (layers, toasts, overlays, disabled...),
+   then Sloosh decisions where neither had one (paper, ports, the logo
+   lip). The values are in three blocks:
+
+     1. The light theme: every token that changes in light. Matches the
+        light page AND any element tagged data-theme="light" (a white card
+        or band on a dark page, a preview panel), so it is complete: tokens
+        built from other tokens (brand-line, data-*, ports...) are restated
+        so they pick up the light values inside such an island too.
+     2. Light page only: values that a white island on a DARK page keeps
+        from DS4 (the critter outline). Matches the light page and white
+        islands inside it, never a white island on a dark page, so the dark
+        app looks exactly as it did.
+   Yellow is the same #FECC15 in both themes, text included (a design
+   decision, Oct 2026): yellow text on white is about 1.5:1, below WCAG
+   AA, so on light it is for display-size titles and accents only, never
+   body or small text (DESIGN_SYSTEM.md, "The yellow rule"). Yellow at
+   label size uses --brand-accent-label, which turns ink on light.
+     3. Theme-independent tokens are NOT here: text and scrims over photos
+        (--on-media*, --media-scrim, the card text fade --blur-scrim /
+        --on-blur*) stay light-on-dark in both themes, because the picture
+        under them doesn't change with the theme. Same for the ink button,
+        agents, savings, the yellow fills (--brand-accent, its foreground
+        and lip), the switch knob and the keycap glint.
+
+   To change a light value: edit it here. A token missing from both light
+   blocks has the same value in both themes (its dark value, on :root).
+   ========================================================================== */
+
+/* 1. The light theme ----------------------------------------------------- */
+:root[data-theme="light"],
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Ground, text, surfaces (DS4) */
+  --background: var(--neutral-0);
+  --foreground: var(--neutral-950);
+  --foreground-subtle: var(--neutral-700);
+  --card: var(--neutral-100);
+  --card-foreground: var(--neutral-950);
+  --popover: var(--neutral-0);
+  --popover-foreground: var(--neutral-950);
+
+  /* Actions (DS4): the default keycap is black on white */
+  --primary: var(--neutral-950);
+  --primary-foreground: var(--neutral-0);
+  --secondary: var(--neutral-150);
+  --secondary-foreground: var(--neutral-950);
+  --muted: var(--neutral-150);
+  --muted-foreground: var(--neutral-600);
+  --accent: var(--neutral-300);
+  --accent-foreground: var(--neutral-950);
+  --destructive: var(--red-600);
+  --destructive-foreground: var(--neutral-0);
+
+  /* Lines and focus (DS4; input: production) */
+  --border: var(--neutral-300);
+  --border-strong: var(--neutral-300);
+  --input: var(--neutral-300);
+  --ring: var(--neutral-950);
+
+  /* Charts, sidebar (DS4) */
+  --chart-1: var(--neutral-950);
+  --chart-2: var(--neutral-700);
+  --chart-3: var(--neutral-500);
+  --chart-4: var(--neutral-300);
+  --chart-5: var(--neutral-150);
+  --sidebar: var(--neutral-100);
+  --sidebar-foreground: var(--neutral-950);
+  --sidebar-primary: var(--neutral-950);
+  --sidebar-primary-foreground: var(--neutral-0);
+  --sidebar-accent: var(--neutral-150);
+  --sidebar-accent-foreground: var(--neutral-950);
+  --sidebar-border: var(--neutral-200);
+  --sidebar-ring: var(--neutral-950);
+
+  /* Disabled (DS4; surface and border: production) */
+  --surface-disabled: var(--neutral-150);
+  --disabled-foreground: var(--neutral-400);
+  --disabled-border: var(--neutral-300);
+
+  /* Status: pale wash, dark text (DS4) */
+  --destructive-subtle: var(--red-50);
+  --destructive-subtle-foreground: var(--red-700);
+  --destructive-border: var(--red-200);
+  --success: var(--emerald-50);
+  --success-foreground: var(--emerald-700);
+  --success-border: var(--emerald-200);
+  --warning: var(--amber-50);
+  --warning-foreground: var(--amber-700);
+  --warning-border: var(--amber-200);
+  --info: var(--blue-50);
+  --info-foreground: var(--blue-700);
+  --info-border: var(--blue-200);
+  /* Restated for light islands (any token built from var() is). */
+  --avatar: var(--slate-700);
+  --avatar-foreground: var(--neutral-0);
+  /* Avatar colours: as in dark (the same in both themes). */
+  --avatar-blue: var(--blue-100);
+  --avatar-blue-foreground: var(--blue-700);
+  --avatar-emerald: var(--emerald-100);
+  --avatar-emerald-foreground: var(--emerald-700);
+  --avatar-amber: var(--amber-100);
+  --avatar-amber-foreground: var(--amber-700);
+  --avatar-violet: var(--violet-100);
+  --avatar-violet-foreground: var(--violet-700);
+  --avatar-red: var(--red-100);
+  --avatar-red-foreground: var(--red-700);
+  --avatar-indigo: var(--indigo-100);
+  --avatar-indigo-foreground: var(--indigo-700);
+  --violet: var(--violet-50);
+  --violet-foreground: var(--violet-700);
+  --violet-border: var(--violet-200);
+  --status-yellow: var(--yellow-50);
+  --status-yellow-foreground: var(--yellow-700);
+  --status-yellow-border: var(--yellow-200);
+  /* "Thinking" text at rest: one step darker so it reads on white. */
+  --text-shimmer-base: hsl(var(--neutral-500));
+
+  /* Brand accent. The yellow FILL (--brand-accent, its text and lip) is the
+     same in both themes; yellow TEXT is block 2. */
+  --brand-accent-glow: hsl(var(--creative-gen-accent-500) / 0.45);
+  /* A selected brand item's ring: pale yellow vanishes on white. */
+  --brand-accent-ring: var(--creative-gen-accent-600);
+  /* Disabled primary / outline: on white a deeper yellow than the tinted
+     wash, with a gold label (about 2.7:1). Face: full colour. */
+  --brand-accent-disabled: hsl(var(--creative-gen-accent-200));
+  --brand-accent-disabled-foreground: var(--creative-gen-accent-700);
+  --brand-accent-disabled-edge: var(--creative-gen-accent-300);
+  /* Its cost pill: one step paler than the face, as the live pill is. */
+  --brand-accent-disabled-pill: hsl(var(--creative-gen-accent-100));
+  /* Solid already on white. */
+  --brand-accent-disabled-solid: var(--brand-accent-disabled);
+  /* Space form tiles: a deeper gold, so the picked ring and the required *
+     read on white (the yellow would be 1.5:1). */
+  --picked-ring: var(--creative-gen-accent-800);
+  /* A pick pill on white: yellow text would be 1.5:1, so a deeper yellow
+     wash with ink text (the yellow rule: on light, yellow is the fill). */
+  --picked-pill: hsl(var(--creative-gen-accent-500) / 0.35);
+  --picked-pill-foreground: var(--neutral-950);
+  /* Small yellow labels go ink on white (see the dark value). */
+  --brand-accent-label: var(--neutral-950);
+  /* Silver on white: a deeper grey, or the sheen vanishes into the card. */
+  --silver-sheen: hsl(var(--neutral-400) / 0.4);
+  --silver-sheen-soft: hsl(var(--neutral-400) / 0.14);
+  /* A raised key on a muted tile: white on the light grey tile. */
+  --key-face: var(--neutral-0);
+  --key-face-hover: var(--neutral-100);
+  /* Hatch strokes: one step deeper so they show on white. */
+  --brand-accent-light: hsl(var(--creative-gen-accent-400));
+  /* The credit banner's ground: a pale yellow, not the dark amber. */
+  --brand-accent-surface: var(--creative-gen-accent-100);
+
+  /* Drawn accents (DS4; drops: deeper blue so they show on white) */
+  --brand-filter-accent-1: hsl(var(--emerald-700));
+  --brand-filter-accent-2: hsl(var(--red-700));
+  --brand-filter-accent-3: hsl(var(--blue-500));
+  --brand-filter-accent-4: hsl(var(--blue-700));
+  --brand-filter-accent-5: hsl(var(--amber-700));
+
+  /* Overlays: a lighter dim, as production's light theme. The strong one
+     (full-screen previews) stays dark. */
+  --dialog-overlay: hsl(var(--neutral-950) / 0.4);
+  --drawer-overlay: hsl(var(--neutral-950) / 0.4);
+
+  /* Toasts: the white card stays, with production's 1px edge and a soft
+     shadow so it lifts off a white page; its action button goes dark. */
+  --toast-ring-width: 1px;
+  --toast-shadow: 0 12px 24px -8px hsl(var(--neutral-950) / 0.16);
+  --toast-action: hsl(var(--neutral-800));
+  --toast-action-foreground: hsl(var(--neutral-0));
+
+  /* Paper (Jam's ticket): pure white on the light grey modal, with a
+     hairline so the sheet's edge shows. */
+  --paper: var(--neutral-0);
+  --paper-edge: hsl(var(--neutral-200));
+
+  /* Phone layers: white sheets, then light greys (production's light
+     ladder, one step gentler). */
+  --layer-1: hsl(var(--neutral-0));
+  --layer-2: hsl(var(--neutral-100));
+  --layer-3: hsl(var(--neutral-150));
+  --layer-4: hsl(var(--neutral-300));
+  --layer-line: hsl(var(--border));
+  --layer-line-strong: hsl(var(--border-strong));
+  --layer-dim: hsl(var(--neutral-500));
+  --layer-scrim: var(--drawer-overlay);
+  --layer-warn: hsl(var(--amber-50));
+  --layer-warn-foreground: hsl(var(--amber-800));
+
+  /* The logo's lip: the original art over a flat copy in the keycap lip's
+     yellow (brand-accent-edge), about 1.5px at the navbar's 32px. */
+  --logo-lip: hsl(var(--brand-accent-edge));
+
+  /* Scrollbars */
+  --scrollbar-thumb: hsl(var(--neutral-300));
+  /* Black at 10% on light. */
+  --image-edge: hsl(0 0% 0% / 0.1);
+
+  /* Elevation (DS4: softer float and modal) */
+  --sl-shadow-float: 0 12px 32px -8px hsl(var(--neutral-950) / 0.18), 0 0 0 1px hsl(var(--border));
+  --sl-shadow-modal: 0 24px 64px -12px hsl(var(--neutral-950) / 0.25), 0 0 0 1px hsl(var(--border));
+  --sl-shadow-halo: 0 0 0 1px hsl(var(--brand-accent)), 0 0 24px -4px var(--brand-accent-glow);
+
+  /* Canvas (Spacelab): run status a step deeper, a softer float shadow. */
+  --status-pending: oklch(0.55 0 0);
+  --status-running: oklch(0.55 0.17 240);
+  --status-completed: oklch(0.55 0.15 145);
+  --status-failed: oklch(0.55 0.22 25);
+  --status-paused: oklch(0.6 0.16 70);
+  --status-awaiting-approval: oklch(0.6 0.16 70);
+  --canvas-float-shadow: 0 12px 24px hsl(var(--neutral-950) / 0.12);
+
+  /* Restated: built from the tokens above, so a light island resolves them
+     with its own values (they are computed where they are declared). */
+  --surface-muted: var(--muted);
+  --surface-accent: var(--accent);
+  --surface-border: var(--border);
+  --sidebar-background: var(--sidebar);
+  --data-text: var(--success);
+  --data-text-foreground: var(--success-foreground);
+  --data-image: var(--info);
+  --data-image-foreground: var(--info-foreground);
+  --data-video: var(--violet);
+  --data-video-foreground: var(--violet-foreground);
+  --data-audio: var(--warning);
+  --data-audio-foreground: var(--warning-foreground);
+  --data-any: var(--muted);
+  --data-any-foreground: var(--muted-foreground);
+  --brand-line: hsl(var(--foreground));
+  --brand-line-soft: hsl(var(--muted-foreground));
+  --brand-line-faint: hsl(var(--border-strong));
+  --brand-note: hsl(var(--card));
+  --brand-shadow: hsl(var(--muted-foreground) / 0.3);
+  --port-text: hsl(var(--success-foreground));
+  --port-text-rest: hsl(var(--success-border) / 0.5);
+  --port-text-on: hsl(var(--success));
+  --port-image: hsl(var(--info-foreground));
+  --port-image-rest: hsl(var(--info-border) / 0.5);
+  --port-image-on: hsl(var(--info));
+  --port-video: hsl(var(--violet-foreground));
+  --port-video-rest: hsl(var(--violet-border) / 0.5);
+  --port-video-on: hsl(var(--violet));
+  --port-audio: hsl(var(--warning-foreground));
+  --port-audio-rest: hsl(var(--warning-border) / 0.5);
+  --port-audio-on: hsl(var(--warning));
+  --port-media: hsl(var(--info-foreground));
+  --port-media-rest: hsl(var(--info-border) / 0.5);
+  --port-media-on: hsl(var(--info));
+  --port-setting: hsl(var(--muted-foreground));
+  --port-setting-rest: hsl(var(--border));
+  --port-setting-on: hsl(var(--muted));
+
+  /* The slab keycap on light (DS4) */
+  --primary-edge: var(--neutral-700);
+  --secondary-edge: var(--neutral-300);
+  --keycap-shine-soft: hsl(var(--neutral-0) / 0.7);
+  /* Loading cards on light: a grey face (the fold over it keeps its
+     border) and a near-white band across it. Full colour. */
+  --skeleton: var(--neutral-150);
+  --skeleton-shine: hsl(var(--neutral-0) / 0.9);
+  /* DS2 names (see the dark block). */
+  --success-subtle: var(--success);
+  --success-subtle-foreground: var(--success-foreground);
+  --warning-subtle: var(--warning);
+  --warning-subtle-foreground: var(--warning-foreground);
+  --info-subtle: var(--info);
+  --info-subtle-foreground: var(--info-foreground);
+  --violet-subtle: var(--violet);
+  --violet-subtle-foreground: var(--violet-foreground);
+  --brand-accent-subtle-foreground: var(--creative-gen-accent-700);
+  --brand-accent-border: var(--creative-gen-accent-200);
+
+}
+
+/* 2. Light page only ----------------------------------------------------- */
+/* The light page, and white islands on it. A white island on a DARK page
+   (pricing's Max card, the MCP white band) is left as DS4 drew it. */
+:root[data-theme="light"],
+:root[data-theme="light"] [data-theme="light"] {
+  /* Critters: an ink outline, the white one vanishes on white. */
+  --critter-line: hsl(var(--neutral-950));
+}
+
+/* Data types (DS4): an element tagged data-type="image" etc. gets its fill
+   and text colour as --_fill / --_fg (node tags, ports, chips). */
+[data-type="text"] { --_fill: hsl(var(--data-text)); --_fg: hsl(var(--data-text-foreground)); }
+[data-type="image"] { --_fill: hsl(var(--data-image)); --_fg: hsl(var(--data-image-foreground)); }
+[data-type="video"] { --_fill: hsl(var(--data-video)); --_fg: hsl(var(--data-video-foreground)); }
+[data-type="audio"] { --_fill: hsl(var(--data-audio)); --_fg: hsl(var(--data-audio-foreground)); }
+[data-type="any"] { --_fill: hsl(var(--data-any)); --_fg: hsl(var(--data-any-foreground)); }
+
+/* Reduced motion (DS4): the drawing and pointer timings drop to 0. The
+   app's own durations (micro, enter, exit, toast, screen, sheet) keep their
+   values: theme.css already shortens every transition app-wide and keeps
+   popups as a fade. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 0ms;
+    --motion-duration-ring: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-duration-fly: 0ms;
+    --motion-duration-pop: 0ms;
+    --motion-duration-lazy: 0ms;
+    --motion-duration-underline: 0ms;
+    --motion-duration-draw: 0ms;
+    --motion-duration-write: 0ms;
+    --motion-duration-write-title: 0ms;
+  }
+}
+
+/* ---- App shell layout -------------------------------------------------------
+   Production: apps/sloosh/app/globals.css.
+   Ultra-wide: content stops at 1920px, centred. The shell's <main> and the
+   navbar pad by this gutter instead of wrapping in a max-width box, so <main>
+   stays the scroller and backgrounds reach the edges. A page marked
+   data-full-width (the canvas editor) keeps the whole width. */
+body {
+  --shell-gutter: 0px;
+  /* The site header's height (Figma 1450:67699). */
+  --nav-h: 61px;
+}
+@media (min-width: 1920px) {
+  body:not(:has([data-full-width])) {
+    --shell-gutter: calc(50% - 960px);
+  }
+}
+
+/* ==========================================================================
+   GROUNDS (pricing, Oct 2026). A card or band that sits on a contrasting
+   colour: the black Creator card, the yellow Pro card and yellow bands, the
+   white Max card and the white cards on yellow, the black cards on yellow.
+   Tag the element and everything inside follows its ground:
+     (none)                 the page's own values (dark, or light)
+     data-theme="light"     white (the light theme above)
+     data-theme="dark"      black on a light page (the dark values)
+     data-ground="yellow"   the Sloosh yellow
+     data-ground="ink"      black, inside a yellow ground
+   Each ground also names the parts a pricing card is made of:
+     --ground          the card face
+     --ground-panel    a box inset in the card (the credits box, a drawer)
+     --ground-chip     a chip or control inside that box (seat stepper, tags)
+     --ground-line     rules between rows
+     --ground-faint    struck prices, "not included" rows, disabled glyphs
+     --ground-mark     ticks and checks
+     --ground-drop     the flat 4px bottom shadow (shadow-drop): the card's
+                       own darker step on dark, the darker yellow on yellow
+     --ground-face-top     a pricing card face's gradient, top to bottom
+     --ground-face-bottom  (.sl-ground-face, theme.css): grey on dark,
+                           yellow on yellow, white into light grey on white
+   No transparency: every value is a step on the neutral or yellow ramp.
+   ========================================================================== */
+:root {
+  --ground: var(--neutral-900);
+  --ground-panel: var(--neutral-800);
+  --ground-chip: var(--neutral-700);
+  --ground-line: var(--neutral-800);
+  --ground-faint: var(--neutral-600);
+  --ground-mark: var(--creative-gen-accent-500);
+  --ground-drop: var(--neutral-800);
+  --ground-face-top: var(--neutral-800);
+  --ground-face-bottom: var(--neutral-900);
+}
+:root[data-theme="light"],
+[data-theme="light"] {
+  --ground: var(--neutral-0);
+  --ground-panel: var(--neutral-100);
+  --ground-chip: var(--neutral-200);
+  --ground-line: var(--neutral-200);
+  --ground-faint: var(--neutral-400);
+  --ground-mark: var(--creative-gen-accent-500);
+  --ground-drop: var(--neutral-300);
+  --ground-face-top: var(--neutral-0);
+  --ground-face-bottom: var(--neutral-50);
+}
+/* A dark island on a light page takes the dark grounds back. Its drop
+   shadow follows whatever it sits on, as on the dark page. */
+:root[data-theme="light"] [data-theme="dark"] {
+  --ground: var(--neutral-900);
+  --ground-panel: var(--neutral-800);
+  --ground-chip: var(--neutral-700);
+  --ground-line: var(--neutral-800);
+  --ground-faint: var(--neutral-600);
+  --ground-mark: var(--creative-gen-accent-500);
+  --ground-face-top: var(--neutral-800);
+  --ground-face-bottom: var(--neutral-900);
+}
+/* A white band on a white page (MCP's capabilities band, data-band="light"):
+   on the light page the band turns light grey, so its hand-cut edges (in
+   the band's own --background) still read. No change on the dark page. */
+:root[data-theme="light"] [data-band="light"] {
+  --background: var(--neutral-100);
+}
+[data-ground="yellow"] {
+  color-scheme: light;
+  --background: var(--creative-gen-accent-500);
+  --foreground: var(--neutral-950);
+  --card-foreground: var(--neutral-950);
+  --foreground-subtle: var(--neutral-800);
+  --muted: var(--creative-gen-accent-300);
+  --muted-foreground: var(--neutral-700);
+  --accent: var(--creative-gen-accent-400);
+  --accent-foreground: var(--neutral-950);
+  --border: var(--creative-gen-accent-600);
+  --border-strong: var(--creative-gen-accent-700);
+  --ring: var(--neutral-950);
+  --disabled-foreground: var(--creative-gen-accent-800);
+  /* Yellow text can't sit on yellow: titles go black. */
+  --brand-accent-text: var(--neutral-950);
+  --brand-accent-label: var(--neutral-950);
+  --brand-line: hsl(var(--neutral-950));
+  --brand-line-soft: hsl(var(--neutral-800));
+  --brand-line-faint: hsl(var(--creative-gen-accent-700));
+  --ground: var(--creative-gen-accent-500);
+  --ground-panel: var(--creative-gen-accent-200);
+  --ground-chip: var(--creative-gen-accent-300);
+  --ground-line: var(--creative-gen-accent-600);
+  --ground-faint: var(--creative-gen-accent-800);
+  --ground-mark: var(--neutral-950);
+  --ground-drop: var(--creative-gen-accent-700);
+  --ground-face-top: var(--creative-gen-accent-300);
+  --ground-face-bottom: var(--creative-gen-accent-500);
+}
+[data-ground="ink"] {
+  color-scheme: dark;
+  --background: var(--neutral-950);
+  --foreground: var(--neutral-50);
+  --card-foreground: var(--neutral-50);
+  --foreground-subtle: var(--neutral-300);
+  --muted: var(--neutral-800);
+  --muted-foreground: var(--neutral-400);
+  --accent: var(--neutral-700);
+  --accent-foreground: var(--neutral-50);
+  --border: var(--neutral-800);
+  --border-strong: var(--neutral-700);
+  --ring: var(--neutral-300);
+  --disabled-foreground: var(--neutral-600);
+  --brand-accent-text: var(--creative-gen-accent-500);
+  --brand-accent-label: var(--creative-gen-accent-500);
+  --brand-line: hsl(var(--neutral-50));
+  --brand-line-soft: hsl(var(--neutral-400));
+  --brand-line-faint: hsl(var(--neutral-700));
+  --ground: var(--neutral-950);
+  --ground-panel: var(--neutral-900);
+  --ground-chip: var(--neutral-800);
+  --ground-line: var(--neutral-800);
+  --ground-faint: var(--neutral-600);
+  --ground-mark: var(--creative-gen-accent-500);
+  --ground-drop: var(--creative-gen-accent-600);
+  --ground-face-top: var(--neutral-900);
+  --ground-face-bottom: var(--neutral-950);
+}
+/* A white or black card on a yellow ground drops its shadow on the yellow. */
+[data-ground="yellow"] [data-theme="light"],
+[data-ground="yellow"] [data-ground="ink"] {
+  --ground-drop: var(--creative-gen-accent-600);
+}

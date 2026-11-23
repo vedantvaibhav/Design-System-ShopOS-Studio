@@ -26,6 +26,7 @@ studio, engine and shared space. A slot turns Ready once `systems/<id>` exists.
 | ------ | ---------- |
 | [catalog-co](systems/catalog-co) | The ShopOS Studio design system in one file. Use it for any ShopOS Studio screen, component or review, in any stack. It holds every rule from the owner's design reviews (1 to 38), the resolved tokens for light and dark as copy-paste CSS, the motion system with its code, component recipes, screen patterns, fonts and icons, and a checklist. Follow it exactly; where your own taste disagrees, this file wins. |
 | [jammie](systems/jammie) | Jammie's design system — tokens, type, the Jammie character, 3D icons, line icons and the shared cards (feed card, saved card, story ring, Command centre card, memory tile, rows). Use when building or reviewing any Jammie screen, so it uses the existing tokens and components instead of inventing new ones. |
+| [sloosh](systems/sloosh) | Sloosh's design system: dark by default, one yellow (#FECC15) for the main action and display titles, keycap buttons, Bricolage Grotesque titles, pictures carry the colour. Use when building or reviewing any Sloosh screen or component, in dark and light. |
 <!-- systems:end -->
 
 ## Download one system
