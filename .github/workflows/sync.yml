@@ -1,0 +1,63 @@
+name: Sync from source repos
+
+# A source repo's push sends `source-updated` (templates/notify-design-systems.yml),
+# so its systems sync within minutes. The daily run catches anything missed, and
+# Run workflow syncs on demand. Every change arrives as one rolling pull request.
+on:
+  repository_dispatch:
+    types: [source-updated]
+  workflow_dispatch:
+    inputs:
+      id:
+        description: One system id from sources.json (blank syncs all)
+        required: false
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync
+        id: sync
+        continue-on-error: true
+        env:
+          SOURCES_TOKEN: ${{ secrets.SOURCES_TOKEN }}
+          SYNC_REPORT: ${{ runner.temp }}/sync-report.md
+          FROM_REPO: ${{ github.event.client_payload.repo }}
+          ONLY_ID: ${{ inputs.id }}
+        run: |
+          args=()
+          if [ -n "$FROM_REPO" ]; then args+=(--repo "$FROM_REPO"); fi
+          if [ -n "$ONLY_ID" ]; then args+=(--id "$ONLY_ID"); fi
+          node scripts/sync.mjs "${args[@]}"
+
+      - name: Open or update the pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: sync/sources
+          delete-branch: true
+          title: Sync design systems from their repos
+          commit-message: Sync design systems from their repos
+          body-path: ${{ runner.temp }}/sync-report.md
+
+      - name: Fail if a source could not sync
+        if: steps.sync.outcome == 'failure'
+        run: |
+          cat "$RUNNER_TEMP/sync-report.md"
+          exit 1

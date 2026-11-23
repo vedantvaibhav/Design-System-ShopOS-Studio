@@ -1,0 +1,25 @@
+# Copy this file into a source repo as .github/workflows/notify-design-systems.yml.
+# On every push to main it tells Design-System-ShopOS-Studio to sync the systems
+# that come from this repo. Needs the secret DESIGN_SYSTEMS_TOKEN in this repo
+# (see "Keeping systems up to date" in that repo's README).
+name: Notify design systems
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ask Design-System-ShopOS-Studio to sync
+        env:
+          TOKEN: ${{ secrets.DESIGN_SYSTEMS_TOKEN }}
+          SOURCE: ${{ github.repository }}
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/vedantvaibhav/Design-System-ShopOS-Studio/dispatches \
+            -d "{\"event_type\":\"source-updated\",\"client_payload\":{\"repo\":\"$SOURCE\"}}"

@@ -1,0 +1,19 @@
+{
+  "jammie": {
+    "repo": "vedantvaibhav/ShopOS-Feed",
+    "ref": "main",
+    "skill": "skill/jammie-design/SKILL.md",
+    "copy": {
+      "design-system.html": "design-system.html",
+      "assets/jammie/v3": "assets/jammie/v3"
+    },
+    "exclude": ["assets/jammie/v3/demo/*", "assets/jammie/v3/look-*"],
+    "replace": [
+      { "file": "design-system.html", "find": "  <a class=\"go\" href=\"app.html\">Prototype</a>\n", "with": "" },
+      { "file": "design-system.html", "find": "  <a class=\"go\" href=\"flows.html\">Flow map</a>\n", "with": "" },
+      { "file": "design-system.html", "find": " + '<h6>Also</h6><a href=\"app.html\">Prototype</a><a href=\"flows.html\">Flow map</a>'", "with": "" },
+      { "file": "design-system.html", "find": "skill/jammie-design/SKILL.md", "with": "SKILL.md" }
+    ],
+    "keep": ["README.md"]
+  }
+}

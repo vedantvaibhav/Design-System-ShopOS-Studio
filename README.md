@@ -64,6 +64,36 @@ systems/<name>/
 Only `SKILL.md` and `README.md` are required. Start from
 [`systems/_template`](systems/_template).
 
+## Keeping systems up to date
+
+Most systems live in their own repos. [`sources.json`](sources.json) says where
+each one comes from, and [`scripts/sync.mjs`](scripts/sync.mjs) copies it here.
+The **Sync from source repos** workflow runs that script and opens one rolling
+pull request with whatever changed:
+
+- within minutes of a push to a source repo that carries the notify workflow
+- every day at 03:17 UTC
+- whenever you press **Run workflow** on the Actions tab
+
+A source that cannot be read keeps its current files and the run is marked failed.
+`sources.lock.json` records the commit each system was last synced from.
+
+One-time setup:
+
+1. **This repo:** Settings → Actions → General → Workflow permissions → tick
+   *Allow GitHub Actions to create and approve pull requests*.
+2. **Private sources:** create a fine-grained token with *Contents: Read* on those
+   repos and save it here as the Actions secret `SOURCES_TOKEN`. Public sources
+   need nothing.
+3. **Instant updates, per source repo:** copy
+   [`templates/notify-design-systems.yml`](templates/notify-design-systems.yml) to
+   its `.github/workflows/`, and save a fine-grained token with *Contents: Read and
+   write* on this repo as its secret `DESIGN_SYSTEMS_TOKEN`. One token can serve
+   every source repo.
+
+To add a system from its repo, add an entry to `sources.json` (see
+[CONTRIBUTING.md](CONTRIBUTING.md)) and run the workflow once.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). In short: copy the template, fill it in,
