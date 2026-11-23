@@ -6,9 +6,11 @@ window.DS = {
     {
       "id": "studios",
       "title": "Studios",
+      "label": "Studio",
       "items": [
         {
           "id": "catalog-co",
+          "size": "xl",
           "shape": "grid",
           "name": "Catalog Co.",
           "kicker": "Catalog",
@@ -26,7 +28,7 @@ window.DS = {
           "id": "creative-co",
           "shape": "burst",
           "name": "Creative Co.",
-          "kicker": "Campaigns and films",
+          "kicker": "Campaigns, films",
           "accent": "#FF8A5B",
           "ready": false
         },
@@ -40,6 +42,7 @@ window.DS = {
         },
         {
           "id": "jammie",
+          "size": "wide",
           "shape": "drop",
           "name": "Jammie",
           "kicker": "Feed, listen, pages",
@@ -101,7 +104,7 @@ window.DS = {
           "id": "social-co",
           "shape": "bubble",
           "name": "Social Co.",
-          "kicker": "Social and influencers",
+          "kicker": "Social, influencers",
           "accent": "#FF9AD5",
           "stage": "To acquire",
           "ready": false
@@ -110,7 +113,7 @@ window.DS = {
           "id": "storefront-co",
           "shape": "arch",
           "name": "Storefront Co.",
-          "kicker": "Shopify and agentic shopping",
+          "kicker": "Shopify, agentic",
           "accent": "#C9B6FF",
           "stage": "Exploring",
           "ready": false
@@ -120,9 +123,11 @@ window.DS = {
     {
       "id": "warehouse",
       "title": "The Warehouse",
+      "label": "Memory",
       "items": [
         {
           "id": "warehouse",
+          "size": "wide",
           "shape": "boxes",
           "name": "The Warehouse",
           "kicker": "Shared memory",
@@ -134,9 +139,11 @@ window.DS = {
     {
       "id": "engines",
       "title": "Engines",
+      "label": "Engine",
       "items": [
         {
           "id": "sloosh",
+          "size": "wide",
           "shape": "spark",
           "name": "Sloosh",
           "kicker": "Making",
@@ -191,26 +198,12 @@ window.DS = {
         },
         {
           "id": "4lunches",
+          "size": "wide",
           "shape": "bars",
           "name": "4Lunches",
           "kicker": "Listening",
           "accent": "#9BE3C3",
           "stage": "Partner",
-          "ready": false
-        }
-      ]
-    },
-    {
-      "id": "centre",
-      "title": "The Centre",
-      "items": [
-        {
-          "id": "centre",
-          "shape": "rings",
-          "name": "The Centre",
-          "kicker": "Careers, culture, merch, partner kits",
-          "accent": "#111B21",
-          "ink": "#FCF5EB",
           "ready": false
         }
       ]

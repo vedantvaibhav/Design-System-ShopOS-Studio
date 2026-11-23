@@ -16,26 +16,18 @@
       <a class="mark" href="./"><i></i>ShopOS</a>
       <span class="spacer"></span>
       <a class="btn raised hide-sm" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio">GitHub</a>
-      <a class="btn green raised" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio/archive/refs/heads/main.zip">
-        Download all
+      <button class="btn green raised" type="button" id="download-all">
+        <span>Download all</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
-      </a>
+      </button>
     </div>
   </header>
 
   <main class="wrap">
-    <section class="hero">
-      <div>
-        <span class="pill">Design systems</span>
-        <h1 id="line">One group, many studios.</h1>
-      </div>
-      <nav class="bubbles" id="bubbles" aria-label="Jump to a studio"></nav>
+    <section class="intro">
+      <h1 id="line">One group, many studios.</h1>
     </section>
-    <div id="groups"></div>
-    <section class="band">
-      <h2>Add yours</h2>
-      <a class="btn ink raised" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio/blob/main/CONTRIBUTING.md">How to contribute</a>
-    </section>
+    <div class="bento" id="bento"></div>
   </main>
 
   <script src="site/data.js"></script>
@@ -49,31 +41,53 @@
     const status = (it) => it.stage ? `<span class="pill">${esc(it.stage)}</span>`
       : it.ready ? '<span class="pill ready">Ready</span>' : '<span class="pill">Soon</span>';
 
-    const card = (it, wide) => `
-      <a class="card raised${wide ? " wide" : ""}" href="${href(it)}" style="${vars(it)}">
-        <div class="card-art">${shapeSvg(it.shape, dark(it))}${status(it)}</div>
-        <div class="card-body">
-          <div class="txt"><span class="kicker">${esc(it.kicker)}</span><h3>${esc(it.name)}</h3></div>
-          <span class="go">${arrow}</span>
-        </div>
-      </a>`;
-
+    // One bento of every slot, in the order of site/structure.json.
     const { groups, line } = window.DS;
     document.getElementById("line").textContent = line;
-    const all = groups.flatMap((g) => g.items);
-    const tilts = [-3, 2, -1, 3, -2, 1, -3, 2, 0, -1];
-    document.getElementById("bubbles").innerHTML = all.map((it, i) =>
-      `<a class="bubble raised" href="${href(it)}" style="${vars(it)};--tilt:${tilts[i % tilts.length]}deg">${esc(it.name)}</a>`).join("");
+    const tiles = groups.flatMap((g) => g.items.map((it) => ({ ...it, group: g.label || g.title })));
+    document.getElementById("bento").innerHTML = tiles.map((it) => `
+      <a class="card raised${it.size ? ` ${it.size}` : ""}" href="${href(it)}" style="${vars(it)}">
+        <div class="card-art">${shapeSvg(it.shape, dark(it))}${status(it)}</div>
+        <div class="card-body">
+          <div class="txt"><span class="kicker">${esc(it.group)} · ${esc(it.kicker)}</span><h3>${esc(it.name)}</h3></div>
+          <span class="go">${arrow}</span>
+        </div>
+      </a>`).join("");
 
-    document.getElementById("groups").innerHTML = groups.map((g) => {
-      const n = g.items.length;
-      const cols = n === 1 ? "one" : n === 2 || n === 4 ? "two" : "";
-      return `
-        <section class="group" id="${esc(g.id)}"${n > 1 ? "" : ` aria-label="${esc(g.title)}"`}>
-          ${n > 1 ? `<div class="group-head"><h2>${esc(g.title)}</h2><span class="pill">${n}</span></div>` : ""}
-          <div class="grid ${cols}">${g.items.map((it) => card(it, n === 1)).join("")}</div>
-        </section>`;
-    }).join("");
+    // Download all: every ready system's folder in one zip, packed in the browser.
+    const ready = tiles.filter((it) => it.ready && it.files);
+    const button = document.getElementById("download-all");
+    const label = button.querySelector("span");
+    button.addEventListener("click", async () => {
+      if (button.disabled) return;
+      button.disabled = true;
+      label.textContent = "Packing…";
+      try {
+        if (!window.JSZip) {
+          await new Promise((res, rej) => {
+            const s = Object.assign(document.createElement("script"), { src: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js", onload: res, onerror: rej });
+            document.head.append(s);
+          });
+        }
+        const zip = new JSZip();
+        await Promise.all(ready.flatMap((it) => it.files.map(async (f) => {
+          const r = await fetch(`systems/${it.id}/${f}`);
+          if (!r.ok) throw new Error(f);
+          zip.folder(it.id).file(f, await r.blob());
+        })));
+        const blob = await zip.generateAsync({ type: "blob" });
+        const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "shopos-design-systems.zip" });
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        label.textContent = "Download all";
+      } catch {
+        // Packing needs the site to be served; fall back to GitHub's archive.
+        location.href = "https://github.com/vedantvaibhav/Design-System-ShopOS-Studio/archive/refs/heads/main.zip";
+        label.textContent = "Download all";
+      } finally {
+        button.disabled = false;
+      }
+    });
 
     const bar = document.querySelector(".bar");
     const onScroll = () => bar.classList.toggle("scrolled", scrollY > 8);
