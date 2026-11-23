@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+// Checks every folder in systems/ and keeps the README index in sync.
+//   node scripts/check.mjs          check only (CI)
+//   node scripts/check.mjs --write  also rewrite the index in README.md
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const root = new URL("..", import.meta.url).pathname;
+const systemsDir = join(root, "systems");
+const readmePath = join(root, "README.md");
+const START = "<!-- systems:start -->";
+const END = "<!-- systems:end -->";
+const write = process.argv.includes("--write");
+
+function frontmatter(text) {
+  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return null;
+  const fields = {};
+  const lines = match[1].split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const kv = lines[i].match(/^([A-Za-z_][\w-]*):\s*(.*)$/);
+    if (!kv) continue;
+    let value = kv[2].trim();
+    if (value === "" || value === ">" || value === "|" || value === ">-" || value === "|-") {
+      const block = [];
+      while (i + 1 < lines.length && /^\s+\S/.test(lines[i + 1])) block.push(lines[++i].trim());
+      value = block.join(" ");
+    }
+    fields[kv[1]] = value.replace(/^(["'])(.*)\1$/, "$2");
+  }
+  return fields;
+}
+
+const errors = [];
+const systems = [];
+
+for (const id of readdirSync(systemsDir).sort()) {
+  const dir = join(systemsDir, id);
+  if (!statSync(dir).isDirectory()) continue;
+  if (!/^_?[a-z0-9]+(-[a-z0-9]+)*$/.test(id)) errors.push(`${id}: folder name must be lowercase-with-hyphens`);
+  for (const file of ["SKILL.md", "README.md"]) {
+    if (!existsSync(join(dir, file))) errors.push(`${id}: missing ${file}`);
+  }
+  if (!existsSync(join(dir, "SKILL.md"))) continue;
+  const fm = frontmatter(readFileSync(join(dir, "SKILL.md"), "utf8"));
+  if (!fm) {
+    errors.push(`${id}: SKILL.md has no frontmatter`);
+    continue;
+  }
+  if (fm.name !== id) errors.push(`${id}: SKILL.md name is "${fm.name ?? ""}", expected "${id}"`);
+  if (!fm.description) errors.push(`${id}: SKILL.md has no description`);
+  if (!id.startsWith("_")) systems.push({ id, description: fm.description ?? "" });
+}
+
+const cell = (s) => s.replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
+const index = systems.length
+  ? [
+      "| System | Use it for |",
+      "| ------ | ---------- |",
+      ...systems.map((s) => `| [${s.id}](systems/${s.id}) | ${cell(s.description)} |`),
+    ].join("\n")
+  : "_No systems yet._";
+
+const readme = readFileSync(readmePath, "utf8");
+const pattern = new RegExp(`${START}[\\s\\S]*?${END}`);
+if (!pattern.test(readme)) {
+  errors.push(`README.md: missing ${START} / ${END} markers`);
+} else {
+  const next = readme.replace(pattern, `${START}\n${index}\n${END}`);
+  if (next !== readme) {
+    if (write) writeFileSync(readmePath, next);
+    else errors.push("README.md: systems index is out of date, run `node scripts/check.mjs --write`");
+  }
+}
+
+if (errors.length) {
+  console.error(errors.map((e) => `✗ ${e}`).join("\n"));
+  process.exit(1);
+}
+console.log(`✓ ${systems.length} system${systems.length === 1 ? "" : "s"} checked`);
