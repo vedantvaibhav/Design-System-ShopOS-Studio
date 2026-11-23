@@ -10,7 +10,9 @@ references both of them read.
 ## Browse
 
 Open [`index.html`](index.html) (or the GitHub Pages site, once it is on) to see
-every studio's system. To run it locally, serve the repo root:
+every studio's system. Each one opens in a viewer with its palette, type, shape
+and motion drawn live from its own tokens, its guide pages, a link to its live
+site, and how to use it with Claude. To run it locally, serve the repo root:
 
 ```bash
 python3 -m http.server 5180

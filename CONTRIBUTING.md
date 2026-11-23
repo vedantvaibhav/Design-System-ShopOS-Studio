@@ -17,6 +17,11 @@
 4. Put tokens in `tokens/`, longer guides in `references/`, files in `assets/`.
    Delete any folder you do not use. A `design-system.html` in the folder shows
    as the system's Live reference on the site.
+   The site builds each system's viewer by itself: Palette, Type specimen,
+   Shape, Spacing and Motion come from the CSS custom properties in the folder's
+   `.css` files and in any ```` ```css ```` block in its Markdown; dark values come
+   from `[data-theme="dark"]` or `prefers-color-scheme: dark`. Each other `.md`
+   file becomes a Guide page; with none, each `##` section of `SKILL.md` does.
 5. Regenerate the index in the root README and check everything:
 
    ```bash
