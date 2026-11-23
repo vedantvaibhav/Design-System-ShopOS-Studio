@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopOS Design Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site/site.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="wrap">
+      <a class="btn raised" href="./">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>
+        All systems
+      </a>
+      <span class="spacer"></span>
+      <a class="mark" href="./"><i></i>ShopOS</a>
+    </div>
+  </header>
+  <main class="wrap" id="main"></main>
+
+  <script src="site/data.js"></script>
+  <script src="site/shapes.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+  <script>
+    const REPO = "vedantvaibhav/Design-System-ShopOS-Studio";
+    const GH = `https://github.com/${REPO}`;
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const main = document.getElementById("main");
+    const id = new URLSearchParams(location.search).get("id");
+    const item = window.DS.groups.flatMap((g) => g.items).find((it) => it.id === id);
+
+    if (!item) {
+      main.innerHTML = `<section class="empty"><h2>Not found.</h2><a class="btn green raised" href="./">All systems</a></section>`;
+    } else {
+      document.title = `${item.name} · ShopOS Design Systems`;
+      const dark = Boolean(item.ink) && item.ink.toLowerCase() !== "#ffffff";
+      const pill = item.stage ? `<span class="pill">${esc(item.stage)}</span>`
+        : item.ready ? '<span class="pill ready">Ready</span>' : '<span class="pill">Soon</span>';
+      const hero = `
+        <section class="detail-hero" style="--accent:${item.accent};--accent-ink:${item.ink || "var(--ink)"}">
+          ${shapeSvg(item.shape, dark)}
+          ${pill}
+          <span class="kicker">${esc(item.kicker)}</span>
+          <h1>${esc(item.name)}</h1>
+        </section>`;
+
+      if (!item.ready) {
+        main.innerHTML = hero + `
+          <section class="empty">
+            <h2>Soon.</h2>
+            <a class="btn ink raised" href="${GH}/blob/main/CONTRIBUTING.md">Add it</a>
+          </section>`;
+      } else {
+        const dir = `systems/${item.id}`;
+        const cmd = `npx degit ${REPO}/${dir} ~/.claude/skills/${item.id}`;
+        main.innerHTML = hero + `
+          <section class="get raised">
+            <div class="cmd"><code>${esc(cmd)}</code><button class="btn green raised" id="copy" type="button">Copy</button></div>
+            <div class="links">
+              ${item.preview ? `<a class="btn ink raised" href="${dir}/${esc(item.preview)}">Live reference</a>` : ""}
+              <a class="btn raised" href="${GH}/blob/main/${dir}/SKILL.md">SKILL.md</a>
+              <a class="btn raised" href="${GH}/tree/main/${dir}">Folder</a>
+            </div>
+          </section>
+          <article class="doc raised" id="doc"></article>`;
+
+        const copy = document.getElementById("copy");
+        copy.addEventListener("click", async () => {
+          try { await navigator.clipboard.writeText(cmd); copy.textContent = "Copied"; }
+          catch { copy.textContent = "Select and copy"; }
+          setTimeout(() => (copy.textContent = "Copy"), 1600);
+        });
+
+        const doc = document.getElementById("doc");
+        fetch(`${dir}/README.md`)
+          .then((r) => (r.ok ? r.text() : Promise.reject()))
+          .then((md) => {
+            doc.innerHTML = DOMPurify.sanitize(marked.parse(md));
+            // The hero already names the system.
+            if (doc.firstElementChild?.tagName === "H1") doc.firstElementChild.remove();
+            // Paths in a system's README are relative to its folder.
+            const local = (u) => u && !/^([a-z]+:|#|\/)/i.test(u);
+            doc.querySelectorAll("img[src]").forEach((el) => {
+              if (local(el.getAttribute("src"))) el.src = `${dir}/${el.getAttribute("src")}`;
+            });
+            doc.querySelectorAll("a[href]").forEach((el) => {
+              const h = el.getAttribute("href");
+              if (!local(h)) return;
+              el.href = /\.md$/i.test(h) ? `${GH}/blob/main/${dir}/${h}` : `${dir}/${h}`;
+            });
+          })
+          .catch(() => {
+            doc.innerHTML = `<p><a href="${GH}/blob/main/${dir}/README.md">Read the README on GitHub</a></p>`;
+          });
+      }
+    }
+
+    const bar = document.querySelector(".bar");
+    const onScroll = () => bar.classList.toggle("scrolled", scrollY > 8);
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+</html>

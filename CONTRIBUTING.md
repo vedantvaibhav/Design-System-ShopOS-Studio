@@ -3,7 +3,8 @@
 ## Add a design system
 
 1. Copy the template under a new folder name. Use lowercase and hyphens; the
-   folder name is the system's id.
+   folder name is the system's id. To fill a slot on the site, use that slot's
+   `id` from `site/structure.json` (for example `crafeed` or `sloosh`).
 
    ```bash
    cp -R systems/_template systems/my-system
@@ -14,7 +15,8 @@
    also the one-line summary in the root README).
 3. Fill in `README.md` for people: what the system is for, a preview, how to use it.
 4. Put tokens in `tokens/`, longer guides in `references/`, files in `assets/`.
-   Delete any folder you do not use.
+   Delete any folder you do not use. A `design-system.html` in the folder shows
+   as the system's Live reference on the site.
 5. Regenerate the index in the root README and check everything:
 
    ```bash

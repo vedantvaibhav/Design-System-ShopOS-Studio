@@ -1,0 +1,40 @@
+{
+  "company": "ShopOS",
+  "line": "One group, many studios.",
+  "groups": [
+    {
+      "id": "studios",
+      "title": "Studios",
+      "items": [
+        { "id": "catalog-co", "shape": "grid", "name": "Catalog Co.", "kicker": "Catalog", "accent": "#7FD1FF" },
+        { "id": "creative-co", "shape": "burst", "name": "Creative Co.", "kicker": "Campaigns and films", "accent": "#FF8A5B" },
+        { "id": "crafeed", "shape": "arrow", "name": "Crafeed", "kicker": "Performance ads", "accent": "#B7F36B" },
+        { "id": "jammie", "shape": "drop", "name": "Jammie", "kicker": "Feed, listen, pages", "accent": "#E93A4C", "ink": "#FFFFFF" },
+        { "id": "social-co", "shape": "bubble", "name": "Social Co.", "kicker": "Social and influencers", "accent": "#FF9AD5", "stage": "To acquire" },
+        { "id": "storefront-co", "shape": "arch", "name": "Storefront Co.", "kicker": "Shopify and agentic shopping", "accent": "#C9B6FF", "stage": "Exploring" }
+      ]
+    },
+    {
+      "id": "warehouse",
+      "title": "The Warehouse",
+      "items": [
+        { "id": "warehouse", "shape": "boxes", "name": "The Warehouse", "kicker": "Shared memory", "accent": "#E9D8B8" }
+      ]
+    },
+    {
+      "id": "engines",
+      "title": "Engines",
+      "items": [
+        { "id": "sloosh", "shape": "spark", "name": "Sloosh", "kicker": "Making", "accent": "#FFE14D" },
+        { "id": "4lunches", "shape": "bars", "name": "4Lunches", "kicker": "Listening", "accent": "#9BE3C3", "stage": "Partner" }
+      ]
+    },
+    {
+      "id": "centre",
+      "title": "The Centre",
+      "items": [
+        { "id": "centre", "shape": "rings", "name": "The Centre", "kicker": "Careers, culture, merch, partner kits", "accent": "#111B21", "ink": "#FCF5EB" }
+      ]
+    }
+  ]
+}

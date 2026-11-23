@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopOS Design Systems</title>
+  <meta name="description" content="Every ShopOS studio's design system, ready to read and download.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site/site.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="wrap">
+      <a class="mark" href="./"><i></i>ShopOS</a>
+      <span class="spacer"></span>
+      <a class="btn raised hide-sm" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio">GitHub</a>
+      <a class="btn green raised" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio/archive/refs/heads/main.zip">
+        Download all
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0-5-5m5 5 5-5M5 20h14"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <span class="pill">Design systems</span>
+        <h1 id="line">One group, many studios.</h1>
+      </div>
+      <nav class="bubbles" id="bubbles" aria-label="Jump to a studio"></nav>
+    </section>
+    <div id="groups"></div>
+    <section class="band">
+      <h2>Add yours</h2>
+      <a class="btn ink raised" href="https://github.com/vedantvaibhav/Design-System-ShopOS-Studio/blob/main/CONTRIBUTING.md">How to contribute</a>
+    </section>
+  </main>
+
+  <script src="site/data.js"></script>
+  <script src="site/shapes.js"></script>
+  <script>
+    const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>';
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+    const vars = (it) => `--accent:${it.accent};--accent-ink:${it.ink || "var(--ink)"}`;
+    const href = (it) => `system.html?id=${encodeURIComponent(it.id)}`;
+    const dark = (it) => Boolean(it.ink) && it.ink.toLowerCase() !== "#ffffff";
+    const status = (it) => it.stage ? `<span class="pill">${esc(it.stage)}</span>`
+      : it.ready ? '<span class="pill ready">Ready</span>' : '<span class="pill">Soon</span>';
+
+    const card = (it, wide) => `
+      <a class="card raised${wide ? " wide" : ""}" href="${href(it)}" style="${vars(it)}">
+        <div class="card-art">${shapeSvg(it.shape, dark(it))}${status(it)}</div>
+        <div class="card-body">
+          <div class="txt"><span class="kicker">${esc(it.kicker)}</span><h3>${esc(it.name)}</h3></div>
+          <span class="go">${arrow}</span>
+        </div>
+      </a>`;
+
+    const { groups, line } = window.DS;
+    document.getElementById("line").textContent = line;
+    const all = groups.flatMap((g) => g.items);
+    const tilts = [-3, 2, -1, 3, -2, 1, -3, 2, 0, -1];
+    document.getElementById("bubbles").innerHTML = all.map((it, i) =>
+      `<a class="bubble raised" href="${href(it)}" style="${vars(it)};--tilt:${tilts[i % tilts.length]}deg">${esc(it.name)}</a>`).join("");
+
+    document.getElementById("groups").innerHTML = groups.map((g) => {
+      const n = g.items.length;
+      const cols = n === 1 ? "one" : n === 2 || n === 4 ? "two" : "";
+      return `
+        <section class="group" id="${esc(g.id)}"${n > 1 ? "" : ` aria-label="${esc(g.title)}"`}>
+          ${n > 1 ? `<div class="group-head"><h2>${esc(g.title)}</h2><span class="pill">${n}</span></div>` : ""}
+          <div class="grid ${cols}">${g.items.map((it) => card(it, n === 1)).join("")}</div>
+        </section>`;
+    }).join("");
+
+    const bar = document.querySelector(".bar");
+    const onScroll = () => bar.classList.toggle("scrolled", scrollY > 8);
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  </script>
+</body>
+</html>
