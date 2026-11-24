@@ -3,5 +3,10 @@
     "repo": "Shop-OS/sloosh-design-system",
     "ref": "main",
     "commit": "75175b269ecb1a2d8261efa32feaac6ab04e520d"
+  },
+  "jammie": {
+    "repo": "vedantvaibhav/ShopOS-Feed",
+    "ref": "main",
+    "commit": "a14b5f13e0e3f34fedba34a7758cb2dc2b6c495c"
   }
 }

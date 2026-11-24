@@ -76,7 +76,11 @@ Never go below 11px (story names and action labels on a phone). Inputs are 16px 
 - Shadow: `--shadow-1` for a picked segment, `--shadow-2` for the New button, `--shadow-3` for sheets and toasts. Cards on the page carry no shadow.
 - Spacing: 8px steps. 16px gutters on a phone, 24px on desktop, 32px around a centred page column (max 1040px, 720px when narrow).
 - Shell: a 60px rail, a 64px top bar that never moves, a 440px side panel (a sheet from the foot under 860px).
-- Motion: one curve, `--ease` (cubic-bezier(.2,0,0,1)). Pages fade up 8px in 0.28s, panels arrive in 0.32s with all their contents at once. Nothing appears after its container has landed. Respect `prefers-reduced-motion`.
+- A page’s own actions (shuffle on the feed, the three dots on Command centre) sit in the top bar, before the bell. A page inside another (Library, Brand book) gets a back arrow before its title.
+- Nothing opens as a popup in the middle. What is a popup elsewhere (connecting a tool, a report, one number opened up) is a side panel: `{ title, back, body, foot }`. A panel that leads from another carries `back`.
+- Teammates are named in words only. Jammie is the only character drawn.
+- Controls that exist only to try the prototype never go in the product’s bars or panels. The floating Demo button holds light or dark and the links to the flow map and design system, nothing else.
+- Motion: one curve, `--ease` (cubic-bezier(.2,0,0,1)). Pages fade up 8px in 0.28s, panels arrive in 0.32s. A panel's surface lands first; its title, contents and foot fade up together 0.14s later. Never stagger items one by one. Respect `prefers-reduced-motion`.
 
 ## Jammie
 
@@ -134,7 +138,7 @@ What are you showing?
 ```
 
 ### Feed card — `J.fcard(idea)`
-One 5:8 picture that fills the height under the stories, 24px radius. Its title and one line sit on the picture over a soft blur at the foot. Pills top right (`1/8`, Initial draft, a rival tag, sound). Carousels slide sideways with the next frame's edge showing. The actions hang outside it on the right (`.acts`): Keep, Share, Later, Less, Why, Note, then Jam as the one red circle, last.
+One 5:8 picture that fills the height under the stories, 24px radius. Its title and one line sit on the picture over a soft blur at the foot. A pill top left names who made it (Reel maker, Creative director); pills top right carry Start here, Initial draft, a rival tag, `1/8` and sound. Carousels slide sideways with the next frame's edge showing. The actions hang outside it on the right (`.acts`): Keep, Share, Later, Less, Why, More (feedback, assign, a note), then Jam as the one red circle, last. There is one action column for the whole feed, laid over it (`.feed-over`): it stays still while the cards scroll under it, acts on the card on screen, and hides on a plain card.
 
 ### Saved card — `J.scard(idea, { href, note })`
 The picture is the card (4:5, 20px radius), a kind pill top left, a filled heart top right that removes it. The title (two lines max) and `makes · Kept` sit under the picture, not in a box with it. Grid: 4 columns, 32px rows and 24px columns apart; 2 columns on a phone.
@@ -150,14 +154,27 @@ The picture is the card (4:5, 20px radius), a kind pill top left, a filled heart
 A round picture in a 2.5px red ring that turns grey (`.seen`) once watched, name under it. Six across the feed card's width, sized by `--st` (44–72px). Opens full screen with progress bars, taps on either side, and a 5s move to the next.
 
 ### Command centre card — `J.dcard({ label, value, delta, dir, line, bars, meter, mini, acts, need })`
+An act is `[label, what it does, id]`. Buttons carry what they open in `data-id`; never look an action up by the words on the button.
 Answers one question: `label` is "what · over how long", then the number, one line, then actions as soft pills, with at most one `b-jam` last. `bars` or `meter` take the column's `--acc`. `need: true` tints it red and says Needs you. Columns are 340px, 260–680px when dragged, 8px gaps between cards.
 
-### Memory tile — `J.ltile(big, line, isText)`
-A soft block, 96px min height: a big number (24px) or a few words (`isText`, 16px), one quiet line under it. Three across, two on a phone.
+### Memory tile — `J.ltile(big, line, what, id)`
+A soft block, 96px min height: a big number (24px), or a few words (16px) when there is no digit in it, and one quiet line under it. With `what` it is a button (`data-do`, `data-id`) and lights up on hover; without, a plain block. Three across, two on a phone.
 
 ### Rows — `.rows` > `.rowi`
 Soft blocks with a 3px gap; the first and last take the card radius. Bold title, quiet line under it, an icon on the right. Only a row you can press lights up on hover.
 
+## Phone (under 860px)
+
+- A 56px top bar with the logo on the feed and the bell on the right; the six story rings under it, sized to fit the width.
+- The tab bar, as Airbnb does it: 60px, Feed, Command, New (+), Saved, You (a round profile), each a fifth of the width with an 11px word under a 24px icon. The one you are on is red (`--jam`); your profile gets a red ring. It slides away while you scroll down a page and comes back when you scroll up. Memory and Connectors live in the You sheet.
+- Nothing is cut at the edge or ends in dots on a phone. Page tabs become an icon over a short word (Team, Finance, Marketing, Stock, Stove) with a 2px line under the one you are on, and follow what you scroll to. Command centre shows exactly one column a screen. Titles and lines wrap.
+- No popups in the middle of the screen. Sign-in, panels and choices are sheets that rise from the foot, with a handle, over a shade with a 4px blur.
+- Touch targets, as YouTube sizes them: icon buttons 48px (icon 24px), buttons 48px, small buttons, chips and segments 44px, page tabs 48px, rows 56px min, story rings 44–64px.
+- The feed picture runs edge to edge. Its actions are 48px circles on a soft dark blur with a 12px label, Jam a 52px red circle last. On a phone under 700px tall the labels go; all seven icons stay.
+- Fields use 16px text, or iOS zooms the page.
+
 ## States
 
 Wait, empty, error and done use Jammie's pose (120px) and one title, no paragraph: Reading your store (search), Nothing new yet (sleep), That didn't work + Try again (worry), Kept. It is in Saved. as a toast with the small cheer pose.
+
+Toasts always appear in one place: top right, 8px under the top bar, 24px from the right edge (16px on a phone), stacked downward. They slide in from the right and leave after 3s. Never centre a toast or put it at the bottom.
